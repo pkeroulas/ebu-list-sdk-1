@@ -1,13 +1,14 @@
-export const isBrowser = () => global.hasOwnProperty('window');
+import browser from './detail/browser';
+import node from './detail/node';
 
-const loadUrl = () => {
+export const isBrowser = (): boolean => global.hasOwnProperty('window'); // eslint-disable-line no-prototype-builtins
+
+const createUrl = (href: string): any => {
     if (isBrowser()) {
-        console.log(`*************** window`);
-        return require('./detail/url');
-    } else {
-        console.log(`*************** NO window`);
-        return require('url');
+        return browser.createUrl(href);
     }
+
+    return node.createUrl(href);
 };
 
-export const { URL } = loadUrl();
+export { createUrl };

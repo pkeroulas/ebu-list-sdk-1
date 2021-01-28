@@ -14,3 +14,9 @@ export declare class URL {
     slashes: boolean | null;
     port: string | null;
 }
+
+const createUrl = (href: string): any => {
+    return new URL(href);
+};
+
+export default { createUrl };

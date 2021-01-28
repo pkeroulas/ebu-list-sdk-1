@@ -3,7 +3,7 @@ import http from 'http';
 import https from 'https';
 import { StringDecoder } from 'string_decoder';
 import logger from '../utils/logger';
-import { URL } from '../utils/platform';
+import { createUrl } from '../utils/platform';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,7 @@ const makeRequest = (
     options: http.RequestOptions,
     callback: (res: http.IncomingMessage) => void
 ): http.ClientRequest => {
-    const url = new URL(u);
+    const url = createUrl(u);
 
     const o = { ...options };
     o.protocol = url.protocol;
