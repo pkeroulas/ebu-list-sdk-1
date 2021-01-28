@@ -2,8 +2,8 @@ import FormData from 'form-data';
 import http from 'http';
 import https from 'https';
 import { StringDecoder } from 'string_decoder';
-import { URL } from './detail/url';
-import logger from '../logger';
+import logger from '../utils/logger';
+import { URL } from '../utils/platform';
 
 // ////////////////////////////////////////////////////////////////////////////
 
