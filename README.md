@@ -7,7 +7,7 @@ This is an SDK to help develop applications that interact with EBU LIST.
 - Bootstrap:
 
 ```
-> yarn i
+> npm i
 > npx lerna bootstrap
 ```
 
@@ -21,12 +21,12 @@ This is an SDK to help develop applications that interact with EBU LIST.
 
 ```
 > cd demos/
-> yarn run start
+> npm run start
 ```
 
 - Run the login demo:
 
 ```
 > cd demos/
-> yarn run start login --baseUrl https://list.ebu.io --username demo --password demo
+> npm run start login --baseUrl https://list.ebu.io --username demo --password demo
 ```
