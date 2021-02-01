@@ -26,7 +26,7 @@ export default class LIST {
 
     private readonly rest: RestClient;
 
-    private ws: WSCLient | null = null;
+    private ws?: WSCLient = undefined;
 
     public constructor(private readonly baseUrl: string) {
         const unwinder = new Unwinder();
@@ -59,9 +59,14 @@ export default class LIST {
     public async close(): Promise<void> {
         if (this.ws) {
             this.ws.close();
+            this.ws = undefined;
         }
 
         this.authClient.close();
+    }
+
+    public get wsClient(): SocketIOClient.Socket | undefined {
+        return this.ws?.client;
     }
 
     public get info() {
