@@ -154,4 +154,12 @@ export interface IStreamInfo {
     pcap: string; // The id of the pcap on which this stream is contained
     state: StreamState;
     statistics: IStreamStatistics;
+    analyses: StreamAnalyses;
+}
+
+export type StreamAnalyses = IStreamAnalysis[]
+
+export interface IStreamAnalysis {
+    result: 'compliant' | 'not_compliant'
+    details?: any
 }
