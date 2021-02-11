@@ -137,6 +137,12 @@ export interface IStreamStatistics {
     max_line_number?: number; // Video TODO move this to media specific
     packet_count: number; // Total number of RTP packets
     rate?: number; // Video frame/field rate TODO move this to media specific
+    sample_count?: number;
+    samples_per_packet?: number;
+    packet_size?: number;
+    wrong_marker_count?: number;
+    wrong_field_count?: number;
+    payload_error_count?: number;
 }
 
 export interface IStreamInfo {
