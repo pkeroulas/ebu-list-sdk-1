@@ -137,6 +137,12 @@ export interface IStreamStatistics {
     max_line_number?: number; // Video TODO move this to media specific
     packet_count: number; // Total number of RTP packets
     rate?: number; // Video frame/field rate TODO move this to media specific
+    sample_count?: number;
+    samples_per_packet?: number;
+    packet_size?: number;
+    wrong_marker_count?: number;
+    wrong_field_count?: number;
+    payload_error_count?: number;
 }
 
 export interface IStreamInfo {
@@ -145,7 +151,17 @@ export interface IStreamInfo {
     media_type: MediaType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
+    global_video_analysis: any;
+    global_audio_analysis: any;
     pcap: string; // The id of the pcap on which this stream is contained
     state: StreamState;
     statistics: IStreamStatistics;
+    analyses: IStreamAnalyses;
+}
+
+export interface IStreamAnalyses { [key: string]: IStreamAnalysis}
+
+export interface IStreamAnalysis {
+    result: 'compliant' | 'not_compliant'
+    details?: any
 }
