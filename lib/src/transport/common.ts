@@ -65,9 +65,14 @@ const checkStatusCode = (code: number | undefined): boolean => {
     return code >= 200 && code < 400;
 };
 
-const handleHttpResponse = (res: http.IncomingMessage, resolve: resolver, reject: rejector): void => {
+interface IResponseHandler {
+    handleError: (err: Error) => void;
+    handlePayload: (payload: string) => void;
+}
+
+const handleHttpCommonResponse = (res: http.IncomingMessage, handler: IResponseHandler): void => {
     if (!checkStatusCode(res.statusCode)) {
-        reject(new TransportError(res));
+        handler.handleError(new TransportError(res));
     }
 
     let body = '';
@@ -76,18 +81,32 @@ const handleHttpResponse = (res: http.IncomingMessage, resolve: resolver, reject
         body += decoder.write(data);
     });
     res.on('end', () => {
-        if (body === '') {
-            resolve({});
-        } else {
-            try {
-                resolve(JSON.parse(body));
-            } catch (err) {
-                reject(err);
-            }
-        }
+        handler.handlePayload(body);
     });
-    res.on('error', reject);
+    res.on('error', (err: any) => handler.handleError(err as Error));
 };
+
+const handleHttpTextResponse = (res: http.IncomingMessage, resolve: resolver, reject: rejector): void =>
+    handleHttpCommonResponse(res, {
+        handleError: (err: Error) => reject(err),
+        handlePayload: (payload: string) => resolve(payload),
+    });
+
+const handleHttpJSONResponse = (res: http.IncomingMessage, resolve: resolver, reject: rejector): void =>
+    handleHttpCommonResponse(res, {
+        handleError: (err: Error) => reject(err),
+        handlePayload: (body: string) => {
+            if (body === '') {
+                resolve({});
+            } else {
+                try {
+                    resolve(JSON.parse(body));
+                } catch (err) {
+                    reject(err);
+                }
+            }
+        },
+    });
 
 export async function post(baseUrl: string, authToken: string | null, endpoint: string, data: object): Promise<any> {
     const payload: string = JSON.stringify(data);
@@ -108,7 +127,7 @@ export async function post(baseUrl: string, authToken: string | null, endpoint: 
     };
 
     return new Promise((resolve, reject): void => {
-        const callback = (res: http.IncomingMessage): void => handleHttpResponse(res, resolve, reject);
+        const callback = (res: http.IncomingMessage): void => handleHttpJSONResponse(res, resolve, reject);
         const req: http.ClientRequest = makeRequest(`${baseUrl}${endpoint}`, options, callback);
         req.on('error', reject);
         req.write(payload);
@@ -116,7 +135,14 @@ export async function post(baseUrl: string, authToken: string | null, endpoint: 
     });
 }
 
-export async function get(baseUrl: string, authToken: string, endpoint: string): Promise<any> {
+type ResponseHandler = (res: http.IncomingMessage, resolve: resolver, reject: rejector) => void;
+
+export async function getCommon(
+    baseUrl: string,
+    authToken: string,
+    endpoint: string,
+    responseHandler: ResponseHandler
+): Promise<any> {
     const headers: http.OutgoingHttpHeaders = {
         Authorization: `Bearer ${authToken}`,
     };
@@ -128,12 +154,20 @@ export async function get(baseUrl: string, authToken: string, endpoint: string):
     };
 
     return new Promise((resolve, reject): void => {
-        const callback = (res: http.IncomingMessage): void => handleHttpResponse(res, resolve, reject);
+        const callback = (res: http.IncomingMessage): void => responseHandler(res, resolve, reject);
         const req: http.ClientRequest = makeRequest(`${baseUrl}${endpoint}`, options, callback);
         req.on('error', reject);
         req.end();
     });
 }
+
+// JSON responses
+export const get = async (baseUrl: string, authToken: string, endpoint: string): Promise<any> =>
+    getCommon(baseUrl, authToken, endpoint, handleHttpJSONResponse);
+
+// Text responses
+export const getText = async (baseUrl: string, authToken: string, endpoint: string): Promise<any> =>
+    getCommon(baseUrl, authToken, endpoint, handleHttpTextResponse);
 
 export interface IPutEntry {
     name: string;
@@ -165,14 +199,14 @@ export async function putForm(
             rejectUnauthorized: false,
         };
 
-        const callback = (res: http.IncomingMessage): void => handleHttpResponse(res, resolve, reject);
+        const callback = (res: http.IncomingMessage): void => handleHttpJSONResponse(res, resolve, reject);
         const req: http.ClientRequest = makeRequest(`${baseUrl}${endpoint}`, options, callback);
         form.pipe(req);
         req.on('error', err => {
             logger.error(`req.on('error') ${JSON.stringify(err)}`);
             reject(err);
         });
-        req.on('response', res => handleHttpResponse(res, resolve, reject));
+        req.on('response', res => handleHttpJSONResponse(res, resolve, reject));
     });
 }
 
@@ -188,7 +222,7 @@ export async function del(baseUrl: string, authToken: string, endpoint: string):
     };
 
     return new Promise((resolve, reject): void => {
-        const callback = (res: http.IncomingMessage): void => handleHttpResponse(res, resolve, reject);
+        const callback = (res: http.IncomingMessage): void => handleHttpJSONResponse(res, resolve, reject);
         const req: http.ClientRequest = makeRequest(`${baseUrl}${endpoint}`, options, callback);
         req.on('error', reject);
         req.end();

@@ -8,6 +8,10 @@ export class Transport {
         return this.rest.get(endpoint);
     }
 
+    public async getText(endpoint: string) {
+        return this.rest.getText(endpoint);
+    }
+
     public async post(endpoint: string, data: object) {
         return this.rest.post(endpoint, data);
     }

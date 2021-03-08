@@ -159,9 +159,11 @@ export interface IStreamInfo {
     analyses: IStreamAnalyses;
 }
 
-export interface IStreamAnalyses { [key: string]: IStreamAnalysis}
+export interface IStreamAnalyses {
+    [key: string]: IStreamAnalysis;
+}
 
 export interface IStreamAnalysis {
-    result: 'compliant' | 'not_compliant'
-    details?: any
+    result: 'compliant' | 'not_compliant';
+    details?: any;
 }

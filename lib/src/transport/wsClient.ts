@@ -27,6 +27,7 @@ export default class WSCLient {
 
         this.client.on('connect', () => {
             this.client.emit('register', userId);
+            console.log('*****Connected');
         });
 
         this.client.on('error', handleWsError);
