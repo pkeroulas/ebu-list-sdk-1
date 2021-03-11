@@ -35,7 +35,13 @@ export class RestClient {
         // url.searchParams.append('token', `Bearer ${token}`);
 
         // return url;
+
         const token = this.tokenGetter();
+
+        if (path.includes('?')) {
+            return `${path}&token=Bearer ${token}`;
+        }
+
         return `${path}?token=Bearer ${token}`;
     }
 }

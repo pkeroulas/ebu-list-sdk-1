@@ -48,7 +48,7 @@ const makeRequest = (
     o.protocol = url.protocol;
     o.hostname = url.hostname;
     o.port = url.port;
-    o.path = url.pathname;
+    o.path = url.pathname + url.hash + url.search;
 
     if (o.protocol === 'https:') {
         return https.request(o, callback);
