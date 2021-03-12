@@ -20,6 +20,20 @@ export default class Stream {
         return this.transport.rest.getAuthUrl(`/api/pcap/${pcapID}/stream/${streamID}/frame/${timestamp}/png`);
     }
 
+    //Video Graphs
+    public async getCInstForStream(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/CInst?from=${fromNs}&to=${toNs}`
+        );
+        const cinstData: any = response;
+        return cinstData;
+    }
+
     //Audio
     public async renderMp3(pcapID: string, streamID: string | undefined, channelsString: string): Promise<any> {
         const response = await this.transport.get(
