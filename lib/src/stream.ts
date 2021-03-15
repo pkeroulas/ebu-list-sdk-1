@@ -34,6 +34,35 @@ export default class Stream {
         return cinstData;
     }
 
+    public async getVrxIdealForStream(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        groupByNanoseconds?: any
+    ): Promise<any> {
+        const groupBy = groupByNanoseconds ? `&groupByNanoseconds=${groupByNanoseconds}` : '';
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/VrxIdeal?from=${fromNs}&to=${toNs}${groupBy}`
+        );
+        const vrxData: any = response;
+        return vrxData;
+    }
+    public async getDeltaToIdealTpr0Raw(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        groupByNanoseconds?: any
+    ): Promise<any> {
+        const groupBy = groupByNanoseconds ? `&groupByNanoseconds=${groupByNanoseconds}` : '';
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/DeltaToIdealTpr0Raw?from=${fromNs}&to=${toNs}`
+        );
+        const vrxData: any = response;
+        return vrxData;
+    }
+
     //Audio
     public async renderMp3(pcapID: string, streamID: string | undefined, channelsString: string): Promise<any> {
         const response = await this.transport.get(
