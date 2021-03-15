@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "description": "Demos of the EBU LIST SDK",
     "main": "dist/index.js",
+    "private": true,
     "scripts": {
         "start": "node dist/index.js",
         "build": "npm run clean && npm run compile",
