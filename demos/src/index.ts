@@ -16,7 +16,7 @@ const parser = yargs(process.argv.slice(2))
     .command('pcap-upload <pcap-file>', 'Upload a pcap file.')
     .example(
         '$0 pcap-upload ST2110.pcap --url https://list.ebu.io --user demo --pass demo',
-        'Get the version of the EBU hosted LIST instance.'
+        'Upload a pcap file to EBU host LIST instance, analyze and show result.'
     )
     .command('live-capture', 'Do a live capture and analyze (requires a capture engine).')
     .example(
