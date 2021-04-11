@@ -93,4 +93,8 @@ export default class LIST {
     public async logout(): Promise<void> {
         return this.transport.post('/auth/logout', {});
     }
+
+    public getToken(): string {
+        return this.authClient.getToken();
+    }
 }
