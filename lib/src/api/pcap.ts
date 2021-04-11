@@ -151,8 +151,8 @@ export interface IStreamInfo {
     media_type: MediaType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
-    global_video_analysis: any;
-    global_audio_analysis: any;
+    global_video_analysis?: any;
+    global_audio_analysis?: any;
     pcap: string; // The id of the pcap on which this stream is contained
     state: StreamState;
     statistics: IStreamStatistics;

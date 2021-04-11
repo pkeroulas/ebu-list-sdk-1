@@ -2,6 +2,7 @@ import { Unwinder } from '@bisect/bisect-core-ts';
 import * as apiTypes from './api';
 import { AuthClient, ILoginData, IApiHandler, IGenericResponse, ILoginResponse } from './auth';
 import { Info } from './info';
+import { User } from './user';
 import { Live } from './live';
 import Pcap from './pcap';
 import Stream from './stream';
@@ -71,6 +72,10 @@ export default class LIST {
 
     public get info() {
         return new Info(this.transport);
+    }
+
+    public get user() {
+        return new User(this.transport);
     }
 
     public get live() {
