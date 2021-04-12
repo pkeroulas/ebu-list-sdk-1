@@ -1,13 +1,11 @@
 import { Workflow } from './api/constants';
-import { Transport } from './transport';
+import { Transport } from '@bisect/bisect-core-ts';
 import { ILiveSource } from './types';
 
 //////////////////////////////////////////////////////////////////////////////
 
 export class Live {
-    public constructor(private readonly transport: Transport) {
-        this.transport = transport;
-    }
+    public constructor(private readonly transport: Transport) {}
 
     public async getAllSources() {
         const response = await this.transport.get('/api/live/sources');

@@ -1,9 +1,9 @@
-import { LIST } from '@bisect/ebu-list-sdk';
+import { LIST, types } from '@bisect/ebu-list-sdk';
 import { IArgs, IEventInfo } from '../../types';
 import fs from 'fs';
 import websocketEventsEnum from '../websocketEventsEnum';
 
-const doUpload = async (list: LIST, stream: fs.ReadStream): Promise<string> =>
+const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.UploadProgressCallback): Promise<string> =>
     new Promise(async (resolve, reject) => {
         const wsClient = list.wsClient;
         if (wsClient === undefined) {
@@ -33,7 +33,7 @@ const doUpload = async (list: LIST, stream: fs.ReadStream): Promise<string> =>
             }
         };
 
-        const uploadResult = await list.pcap.upload('A pcap file', stream);
+        const uploadResult = await list.pcap.upload('A pcap file', stream, callback);
 
         console.log('Upload returned');
 
@@ -58,7 +58,9 @@ export const run = async (args: IArgs) => {
 
     const stream = fs.createReadStream(pcapFile);
 
-    const pcapId = await doUpload(list, stream);
+    const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
+
+    const pcapId = await doUpload(list, stream, callback);
 
     console.log(`PCAP ID: ${pcapId}`);
 

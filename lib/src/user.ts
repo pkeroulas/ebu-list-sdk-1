@@ -1,5 +1,4 @@
-import { Transport } from './transport';
-import * as types from './types';
+import { Transport } from '@bisect/bisect-core-ts';
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -11,7 +10,7 @@ export class User {
     public async create(username: string, password: string) {
         const data = {
             username: username,
-            password: password
+            password: password,
         };
 
         return await this.transport.post('/user/register', data);

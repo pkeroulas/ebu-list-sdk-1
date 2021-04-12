@@ -33,8 +33,6 @@
     "dependencies": {
         "@bisect/bisect-core-ts": "^0.1.0",
         "@bisect/ebu-list-sdk": "^0.1.0",
-        "@types/form-data": "^2.5.0",
-        "form-data": "^3.0.0",
         "http": "0.0.1-security",
         "https": "^1.0.0",
         "socket.io": "^2.4.0"

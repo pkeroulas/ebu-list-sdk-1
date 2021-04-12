@@ -1,13 +1,11 @@
-import { Transport } from './transport';
-import { IPcapUploadResult } from './types';
+import { Transport } from '@bisect/bisect-core-ts';
+import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
-
+import axios from 'axios';
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Pcap {
-    public constructor(private readonly transport: Transport) {
-        this.transport = transport;
-    }
+    public constructor(private readonly transport: Transport) {}
 
     public async getAll(): Promise<IPcapInfo[]> {
         const response = await this.transport.get('/api/pcap');
@@ -31,11 +29,29 @@ export default class Pcap {
 
     // name: the name that will show up on LIST
     // stream: e.g. fs.createReadStream(path)
-    public async upload(name: string, stream: any): Promise<IPcapUploadResult> {
-        const result = await this.transport.putForm('/api/pcap', [
-            { name: 'pcap', value: stream },
-            { name: 'originalFilename', value: name },
-        ]);
+    public async upload(name: string, stream: any, callback: UploadProgressCallback): Promise<IPcapUploadResult> {
+        const result = await this.transport.putForm(
+            '/api/pcap',
+            [
+                { name: 'pcap', value: stream },
+                { name: 'originalFilename', value: name },
+            ],
+            callback
+        );
+
         return result as IPcapUploadResult;
+    }
+
+    public async downloadPcap(pcapId: string): Promise<any> {
+        const result = await this.transport.download(`/api/pcap/${pcapId}/download`);
+        return result;
+    }
+    public async downloadSdp(pcapId: string): Promise<any> {
+        const result = await this.transport.download(`/api/pcap/${pcapId}/sdp`);
+        return result;
+    }
+    public async downloadJson(pcapId: string): Promise<any> {
+        const result = await this.transport.download(`/api/pcap/${pcapId}/report?type=json`);
+        return result;
     }
 }

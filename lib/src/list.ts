@@ -1,4 +1,4 @@
-import { Unwinder } from '@bisect/bisect-core-ts';
+import { Unwinder, Transport, RestClient, get, post, WSCLient } from '@bisect/bisect-core-ts';
 import * as apiTypes from './api';
 import { AuthClient, ILoginData, IApiHandler, IGenericResponse, ILoginResponse } from './auth';
 import { Info } from './info';
@@ -6,10 +6,6 @@ import { User } from './user';
 import { Live } from './live';
 import Pcap from './pcap';
 import Stream from './stream';
-import { Transport } from './transport';
-import { get, post } from './transport/common';
-import { RestClient } from './transport/restClient';
-import WSCLient from './transport/wsClient';
 import TokenStorage from './tokenStorage';
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -40,7 +36,13 @@ export default class LIST {
             unwinder.add(() => this.authClient.close());
 
             this.rest = new RestClient(baseUrl, this.authClient.getToken.bind(this.authClient));
-            this.transport = new Transport(this.rest);
+            const wsGetter = () => {
+                if (this.ws === undefined) {
+                    throw new Error('Not logged in');
+                }
+                return this.ws.client;
+            };
+            this.transport = new Transport(this.rest, wsGetter);
 
             unwinder.reset();
         } finally {
