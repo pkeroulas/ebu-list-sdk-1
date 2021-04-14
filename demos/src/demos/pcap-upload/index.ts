@@ -35,7 +35,7 @@ const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.Uploa
 
         const uploadResult = await list.pcap.upload('A pcap file', stream, callback);
 
-        console.log('Upload returned');
+        console.log(`Upload returned: ${JSON.stringify(uploadResult)}`);
 
         pcapId = uploadResult.uuid;
 
@@ -54,15 +54,20 @@ export const run = async (args: IArgs) => {
     const pcapFile = args._[1];
 
     const list = new LIST(args.baseUrl);
-    await list.login(args.username, args.password);
 
-    const stream = fs.createReadStream(pcapFile);
+    try {
+        await list.login(args.username, args.password);
 
-    const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
+        const stream = fs.createReadStream(pcapFile);
 
-    const pcapId = await doUpload(list, stream, callback);
+        const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
-    console.log(`PCAP ID: ${pcapId}`);
+        const pcapId = await doUpload(list, stream, callback);
 
-    await list.close();
+        console.log(`PCAP ID: ${pcapId}`);
+    } catch (err) {
+        console.error(`Error uploading file: ${err.toString()}`);
+    } finally {
+        await list.close();
+    }
 };
