@@ -6,6 +6,8 @@ import { User } from './user';
 import { Live } from './live';
 import Pcap from './pcap';
 import Stream from './stream';
+import DownloadManager from './downloadManager';
+import Workflows from './workflows';
 import TokenStorage from './tokenStorage';
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -86,6 +88,14 @@ export default class LIST {
 
     public get pcap(): Pcap {
         return new Pcap(this.transport);
+    }
+
+    public get downloadManager(): DownloadManager {
+        return new DownloadManager(this.transport);
+    }
+
+    public get workflows(): Workflows {
+        return new Workflows(this.transport);
     }
 
     public get stream(): Stream {
