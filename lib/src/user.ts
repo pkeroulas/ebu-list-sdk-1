@@ -28,4 +28,12 @@ export default class User {
     public async updateUserPreferences(value: any): Promise<any> {
         return await this.transport.patch(`/api/user/preferences`, { value });
     }
+
+    public async acceptGDPR(data: any): Promise<any> {
+        return await this.transport.post(`/api/user/gdpr`, data);
+    }
+
+    public async getGDPRStatus(): Promise<any> {
+        return await this.transport.get(`/api/user/gdpr`);
+    }
 }
