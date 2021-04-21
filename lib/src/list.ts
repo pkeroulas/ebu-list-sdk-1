@@ -2,7 +2,7 @@ import { Unwinder, Transport, RestClient, get, post, WSCLient } from '@bisect/bi
 import * as apiTypes from './api';
 import { AuthClient, ILoginData, IApiHandler, IGenericResponse, ILoginResponse } from './auth';
 import { Info } from './info';
-import { User } from './user';
+import User from './user';
 import { Live } from './live';
 import Pcap from './pcap';
 import Stream from './stream';
@@ -78,7 +78,7 @@ export default class LIST {
         return new Info(this.transport);
     }
 
-    public get user() {
+    public get user(): User {
         return new User(this.transport);
     }
 
