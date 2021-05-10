@@ -2,22 +2,17 @@ import { LIST } from '@bisect/ebu-list-sdk';
 import { IArgs } from '../../types';
 import * as readline from 'readline';
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
-
-const askForNumber = async (question: string): Promise<number> => {
+const askForNumber = async (question: string, readline: any): Promise<number> => {
     return new Promise((resolve) => {
-        rl.question(question, (answer: string) => {
+        readline.question(question, (answer: string) => {
             resolve(parseInt(answer));
         });
     });
 };
 
-const askForConfirmation = async (question: string): Promise<boolean> => {
+const askForConfirmation = async (question: string, readline: any): Promise<boolean> => {
     return new Promise((resolve) => {
-        rl.question(question, (answer: string) => {
+        readline.question(question, (answer: string) => {
             resolve(answer === 'y');
         });
     });
@@ -32,6 +27,10 @@ const sleep = async (ms: number) => {
 export const run = async (args: IArgs) => {
     const list = new LIST(args.baseUrl);
     await list.login(args.username, args.password);
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
 
     console.log('---------------------------------');
     console.log('Get live source');
@@ -41,11 +40,11 @@ export const run = async (args: IArgs) => {
     });
 
     console.log('---------------------------------');
-    const index = await askForNumber('Choose source number (defaut 0): ');
+    const index = await askForNumber('Choose source number (defaut 0): ', rl);
     const source = sources[index - 1];
     console.log(`${index}: ${source.meta.label}: ${JSON.stringify(source.sdp.streams)}`);
     console.log('---------------------------------');
-    const duration = await askForNumber('Enter capture duration (default 1 seconds): ');
+    const duration = await askForNumber('Enter capture duration (default 1 seconds): ', rl);
     console.log(`Duration: ${duration * 1000} ms`);
 
     console.log('---------------------------------');
@@ -70,7 +69,7 @@ export const run = async (args: IArgs) => {
     console.log(await list.pcap.getStreams(res[0].id));
 
     console.log('---------------------------------');
-    const del = await askForConfirmation('Do you want to delete pcap? [y/n]');
+    const del = await askForConfirmation('Do you want to delete pcap?  [y/n]', rl);
     if (del == true) {
         await list.pcap.del(res[0].id);
     }
