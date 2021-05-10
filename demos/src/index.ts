@@ -5,22 +5,22 @@ const parser = yargs(process.argv.slice(2))
     .usage('Usage: $0 <command> [options]')
     .command('login', 'Log in a LIST instance and print the version.')
     .example(
-        '$0 login --url https://list.ebu.io --user demo --pass demo',
+        '$0 login -b https://list.ebu.io -u demo -p demo',
         'Get the version of the EBU hosted LIST instance.'
     )
     .command('browse-analysis', 'Select pcap and display stream details.')
     .example(
-        '$0 browse-analysis --url https://list.ebu.io --user demo --pass demo',
+        '$0 browse-analysis -b https://list.ebu.io -u demo -p demo',
         'Show all pcaps and let the use select one and display associated streams'
     )
     .command('pcap-upload <pcap-file>', 'Upload a pcap file.')
     .example(
-        '$0 pcap-upload ST2110.pcap --url https://list.ebu.io --user demo --pass demo',
+        '$0 pcap-upload ST2110.pcap -b https://list.ebu.io -u demo -p demo',
         'Upload a pcap file to EBU host LIST instance, analyze and show result.'
     )
     .command('live-capture', 'Do a live capture and analyze (requires a capture engine).')
     .example(
-        '$0 live-capture --url https://list.ebu.io --user demo --pass demo',
+        '$0 live-capture -b https://list.ebu.io -u demo -p demo',
         'Display the live sources, ask the user to select the one to be captured and analized and ask if pcap must be saved'
     )
     .demandCommand(1, 1)
