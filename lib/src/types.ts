@@ -39,3 +39,13 @@ export interface IUploadProgressInfo {
 }
 
 export type UploadProgressCallback = (info: IUploadProgressInfo) => void;
+
+export interface ILocalStorageHandler {
+    setItem: (key: string, value: any) => void;
+    getItem: (key: string) => any | undefined;
+    removeItem: (key: string) => void;
+}
+
+export interface IListOptions {
+    tokenStorage?: ILocalStorageHandler;
+}

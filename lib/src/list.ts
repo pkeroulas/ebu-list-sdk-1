@@ -9,6 +9,7 @@ import Stream from './stream';
 import DownloadManager from './downloadManager';
 import Workflows from './workflows';
 import TokenStorage from './tokenStorage';
+import { IListOptions, ILocalStorageHandler } from './types';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -28,12 +29,12 @@ export default class LIST {
 
     private ws?: WSCLient = undefined;
 
-    public constructor(private readonly baseUrl: string) {
+    public constructor(private readonly baseUrl: string, options: IListOptions = {}) {
         const unwinder = new Unwinder();
 
         try {
             const apiHandler = makeApiHandler(baseUrl);
-            const storage = new TokenStorage();
+            const storage = options.tokenStorage ?? new TokenStorage();
             this.authClient = new AuthClient(apiHandler, storage);
             unwinder.add(() => this.authClient.close());
 
@@ -103,10 +104,15 @@ export default class LIST {
     }
 
     public async logout(): Promise<void> {
+        this.authClient.logout();
         return this.transport.post('/auth/logout', {});
     }
 
     public getToken(): string {
         return this.authClient.getToken();
+    }
+
+    public setToken(token: string): void {
+        return this.authClient.setToken(token);
     }
 }

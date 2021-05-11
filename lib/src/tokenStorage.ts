@@ -1,4 +1,4 @@
-import { ILocalStorageHandler } from './auth';
+import { ILocalStorageHandler } from './types';
 
 export default class TokenStorage implements ILocalStorageHandler {
     public token: string | undefined = undefined;

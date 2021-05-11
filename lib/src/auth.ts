@@ -105,10 +105,7 @@ export class AuthClient {
         return token !== undefined;
     }
 
-    ////////////////////
-    // Private
-
-    private setToken(token: string): void {
+    public setToken(token: string): void {
         this.storageHandler.setItem(this.tokenLocalStorageKey, token);
 
         const decoded = decodeToken(token);
@@ -125,6 +122,9 @@ export class AuthClient {
         // console.log(`Token expires in ${expireInMs}ms. Setting the timer to fire in ${revalidateTime}ms`);
         this.resetTimer(revalidateTime);
     }
+
+    ////////////////////
+    // Private
 
     private invalidateToken(): void {
         this.storageHandler.removeItem(this.tokenLocalStorageKey);
