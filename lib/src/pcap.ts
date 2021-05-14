@@ -1,6 +1,7 @@
 import { Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
+import AnalysisProfile from './analysisProfile';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +41,10 @@ export default class Pcap {
         );
 
         return result as IPcapUploadResult;
+    }
+
+    public get analysisProfile(): AnalysisProfile {
+        return new AnalysisProfile(this.transport);
     }
 
     public async downloadPcap(pcapId: string): Promise<any> {

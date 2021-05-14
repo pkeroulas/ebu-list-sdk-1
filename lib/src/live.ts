@@ -1,10 +1,10 @@
-import { Workflow } from './api/constants';
 import { Transport } from '@bisect/bisect-core-ts';
+import { Workflow } from './api/constants';
 import { ILiveSource } from './types';
 
 //////////////////////////////////////////////////////////////////////////////
 
-export class Live {
+export default class Live {
     public constructor(private readonly transport: Transport) {}
 
     public async getAllSources() {

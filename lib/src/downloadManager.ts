@@ -1,11 +1,12 @@
 import { Transport } from '@bisect/bisect-core-ts';
+import { IDownloadManagerData } from './api/downloadManager';
 
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class DownloadManager {
     public constructor(private readonly transport: Transport) {}
 
-    public async getAll(): Promise<any> {
+    public async getAll(): Promise<IDownloadManagerData> {
         return this.transport.get(`/api/downloadmngr`);
     }
 

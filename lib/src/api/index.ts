@@ -3,3 +3,5 @@ export * as pcap from './pcap';
 export * as user from './user';
 export * as stream from './stream';
 export * as constants from './constants';
+export * as downloadManager from './downloadManager';
+
