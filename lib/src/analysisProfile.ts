@@ -7,10 +7,13 @@ export default class AnalysisProfile {
     public constructor(private readonly transport: Transport) {}
 
     public async getInfo(): Promise<IAnalysisProfile> {
-        return this.transport.get(`/api/analysis_profile`);
+        const response = await this.transport.get(`/api/analysis_profile`);
+        const allAnalysisProfiles: IAnalysisProfile = response;
+        return allAnalysisProfiles;
     }
 
     public async setDefaultProfile(id: string): Promise<any> {
-        return this.transport.put(`/api/analysis_profile/default`, { id });
+        const response = await this.transport.put(`/api/analysis_profile/default`, { id });
+        return response;
     }
 }

@@ -8,32 +8,38 @@ export default class User {
         this.transport = transport;
     }
 
-    public async create(username: string, password: string) {
+    public async create(username: string, password: string): Promise<void> {
         const data = {
-            username: username,
-            password: password,
+            username,
+            password,
         };
-
-        return await this.transport.post('/user/register', data);
+        const response = await this.transport.post('/user/register', data);
+        return response;
     }
 
-    public async getUser(): Promise<IUserInfo> {
-        return await this.transport.get(`/api/user`);
+    public async getInfo(): Promise<IUserInfo> {
+        const response = await this.transport.get(`/api/user`);
+        const userInfo: IUserInfo = response;
+        return userInfo;
     }
 
-    public async deleteUser(data: any): Promise<any> {
-        return await this.transport.post(`/api/user/delete`, data);
+    public async delete(data: any): Promise<void> {
+        const response = await this.transport.post(`/api/user/delete`, data);
+        return response;
     }
 
-    public async updateUserPreferences(value: any): Promise<any> {
-        return await this.transport.patch(`/api/user/preferences`, { value });
+    public async updateUserPreferences(value: any): Promise<void> {
+        const response = await this.transport.patch(`/api/user/preferences`, { value });
+        return response;
     }
 
-    public async acceptGDPR(data: any): Promise<any> {
-        return await this.transport.post(`/api/user/gdpr`, data);
+    public async acceptGDPR(data: any): Promise<void> {
+        const response = await this.transport.post(`/api/user/gdpr`, data);
+        return response;
     }
 
     public async getGDPRStatus(): Promise<any> {
-        return await this.transport.get(`/api/user/gdpr`);
+        const response = await this.transport.get(`/api/user/gdpr`);
+        return response;
     }
 }

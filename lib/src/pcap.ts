@@ -18,7 +18,7 @@ export default class Pcap {
         return this.transport.get(`/api/pcap/${pcapId}`);
     }
 
-    public async del(pcapId: string): Promise<void> {
+    public async delete(pcapId: string): Promise<void> {
         await this.transport.del(`/api/pcap/${pcapId}`);
     }
 

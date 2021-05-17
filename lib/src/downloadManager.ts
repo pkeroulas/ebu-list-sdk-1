@@ -7,10 +7,13 @@ export default class DownloadManager {
     public constructor(private readonly transport: Transport) {}
 
     public async getAll(): Promise<IDownloadManagerData> {
-        return this.transport.get(`/api/downloadmngr`);
+        const response = await this.transport.get(`/api/downloadmngr`);
+        const downloadManagerData: IDownloadManagerData = response;
+        return downloadManagerData;
     }
 
     public async download(id: string): Promise<any> {
-        return this.transport.download(`/api/downloadmngr/download/${id}`);
+        const response = await this.transport.download(`/api/downloadmngr/download/${id}`);
+        return response;
     }
 }
