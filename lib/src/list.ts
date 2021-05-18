@@ -10,6 +10,7 @@ import DownloadManager from './downloadManager';
 import Workflows from './workflows';
 import TokenStorage from './tokenStorage';
 import { IListOptions } from './types';
+import StreamComparison from './streamComparison';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -105,6 +106,10 @@ export default class LIST {
 
     public get stream(): Stream {
         return new Stream(this.transport);
+    }
+
+    public get streamComparison(): StreamComparison {
+        return new StreamComparison(this.transport);
     }
 
     public async logout(): Promise<void> {
