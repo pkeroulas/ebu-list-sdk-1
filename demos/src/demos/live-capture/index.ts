@@ -79,14 +79,16 @@ export const run = async (args: IArgs) => {
         var waitCount : number = 0;
         while (res.length == 0) {
             waitCount += 1;
-            if (waitCount > (captureDuration * 2)) {
+            if (waitCount > (captureDuration * 3)) {
                 console.log('Analysis timeout.');
                 break;
             }
             await sleep(1000);
             //console.log('.');
             const allAnalysis = await list.pcap.getAll();
-            res = allAnalysis.filter((e: any) => (e.file_name == filename) && e.analyzed);
+            res = allAnalysis.filter((e: any) => (e.file_name == filename) &&
+                                                  e.analyzed &&
+                                                  (typeof e.summary !== 'undefined'));
         }
         const stop = new Date();
         if (waitCount > (captureDuration * 2)) {
@@ -97,20 +99,26 @@ export const run = async (args: IArgs) => {
         /* Handle result */
         const analysis = res[0];
         if (freerun) {
-            if ((analysis.error != '') ||
-                    (analysis.summary.error_list.length > 0) ||
-                    (analysis.total_streams != multicasts.length)) {
-                errorCount += 1;
-                console.log('Errors detected in Pcap:');
-                console.log(util.inspect(analysis, false, null, true));
-                console.log('Streams:');
-                const streams : any [] = await list.pcap.getStreams(analysis.id);
-                console.log(util.inspect(streams, false, null, true));
-                if (errorCount > ERROR_COUNT_LIMIT) { console.log('Maximum error count reached, exit.');
-                    break;
+            try {
+                if ((analysis.error != '') ||
+                        (analysis.summary.error_list.length > 0) ||
+                        (analysis.total_streams != multicasts.length)) {
+                    errorCount += 1;
+                    console.log('Errors detected in Pcap:');
+                    console.log(util.inspect(analysis, false, null, true));
+                    console.log('Streams:');
+                    const streams : any [] = await list.pcap.getStreams(analysis.id);
+                    console.log(util.inspect(streams, false, null, true));
+                    if (errorCount > ERROR_COUNT_LIMIT) {
+                        console.log('Maximum error count reached, exit.');
+                        break;
+                    }
+                } else {
+                    await list.pcap.del(analysis.id);
                 }
-            } else {
-                await list.pcap.del(analysis.id);
+            } catch (err) {
+                console.error(`Error get: ${err.toString()}`);
+                console.log(analysis)
             }
         } else { /* run once, show and exit */
             console.log('Pcap:');
