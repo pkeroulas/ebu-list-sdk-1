@@ -114,7 +114,10 @@ export const run = async (args: IArgs) => {
                         break;
                     }
                 } else {
-                    await list.pcap.del(analysis.id);
+                    const streams : any [] = await list.pcap.getStreams(analysis.id);
+                    const ts : number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
+                    console.error(`ts+++++++++++++++++++++++++++++++++++++++++++++++++++: ${Math.floor(ts)} s`);
+                    await list.pcap.delete(analysis.id);
                 }
             } catch (err) {
                 console.error(`Error get: ${err.toString()}`);
@@ -128,7 +131,7 @@ export const run = async (args: IArgs) => {
             console.log('Errors:');
             console.log(analysis.summary.error_list);
             if (await askForConfirmation('Do you want to delete pcap? [y/n]', rl) == true) {
-                await list.pcap.del(analysis.id);
+                await list.pcap.delete(analysis.id);
             }
             break;
         }
