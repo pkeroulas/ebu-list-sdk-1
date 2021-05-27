@@ -1,6 +1,7 @@
 import { Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo } from './api/pcap';
+import AnalysisProfile from './analysisProfile';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +18,7 @@ export default class Pcap {
         return this.transport.get(`/api/pcap/${pcapId}`);
     }
 
-    public async del(pcapId: string): Promise<void> {
+    public async delete(pcapId: string): Promise<void> {
         await this.transport.del(`/api/pcap/${pcapId}`);
     }
 
@@ -42,6 +43,10 @@ export default class Pcap {
         return result as IPcapUploadResult;
     }
 
+    public get analysisProfile(): AnalysisProfile {
+        return new AnalysisProfile(this.transport);
+    }
+
     public async downloadPcap(pcapId: string): Promise<any> {
         const result = await this.transport.download(`/api/pcap/${pcapId}/download`);
         return result;
@@ -54,27 +59,6 @@ export default class Pcap {
 
     public async downloadJson(pcapId: string): Promise<any> {
         const result = await this.transport.download(`/api/pcap/${pcapId}/report?type=json`);
-        return result;
-    }
-
-    public async getDownloads(): Promise<any> {
-        const result = await this.transport.get(`/api/downloadmngr`);
-        return result;
-    }
-
-    public async createWorkflow(info: any): Promise<any> {
-        console.log('pcap api', info);
-        const result = await this.transport.post(`/api/workflow/`, info);
-        return result;
-    }
-
-    public async cancelWorkflow(info: any): Promise<any> {
-        const result = await this.transport.putForm(`/api/workflow/`, info);
-        return result;
-    }
-
-    public async getWorkflows(): Promise<any> {
-        const result = await this.transport.get(`/api/workflow/`);
         return result;
     }
 }
