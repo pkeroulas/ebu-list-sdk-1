@@ -1,5 +1,6 @@
-import { LIST } from '@bisect/ebu-list-sdk';
-import { IArgs } from '../../types';
+import { LIST, types } from '@bisect/ebu-list-sdk';
+import { IArgs, IEventInfo, PcapFileProcessingDone } from '../../types';
+import websocketEventsEnum from '../websocketEventsEnum';
 import * as readline from 'readline';
 import * as util from 'util';
 
@@ -28,15 +29,49 @@ const sleep = async (ms: number) => {
     });
 };
 
+const doCapture = async (list: LIST, filename: string, captureDuration: number,
+        sources: string [], callback: types.UploadProgressCallback): Promise<PcapFileProcessingDone> =>
+    new Promise(async (resolve, reject) => {
+        const wsClient = list.wsClient;
+        if (wsClient === undefined) {
+            reject(new Error('WebSocket client not connected'));
+            return;
+        }
+
+        const start = new Date();
+        let messages: IEventInfo[] = [];
+
+        const handleMessage = (msg: IEventInfo) => {
+            messages.push(msg);
+            messages.forEach(msg => processMessage(msg));
+            messages = [];
+        };
+
+        wsClient.on('message', handleMessage);
+
+        const processMessage = (msg: IEventInfo) => {
+            //console.log(JSON.stringify(msg.event));
+            if (msg.event != websocketEventsEnum.PCAP.FILE_PROCESSING_DONE) {
+                return;
+            }
+            const pcap: PcapFileProcessingDone = msg.data as PcapFileProcessingDone;
+            if (pcap.file_name != filename) {
+                return;
+            }
+            wsClient.off('message', handleMessage);
+            const stop = new Date();
+            console.log(`Analyzed in ${Math.abs(stop.getTime() - start.getTime())/1000} s`);
+            resolve(pcap);
+        };
+        await list.live.startCapture(filename, captureDuration * 1000, sources);
+    });
+
 export const run = async (args: IArgs) => {
     const list = new LIST(args.baseUrl);
-    await list.login(args.username, args.password);
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
     const freerun : boolean = (typeof args.freerun !== 'undefined');
     const multicasts : any [] = (typeof args.multicasts === 'undefined')? [] : args.multicasts.split(',');
+
+    await list.login(args.username, args.password);
 
     console.log('---------------------------------');
     console.log('Get live sources');
@@ -48,20 +83,25 @@ export const run = async (args: IArgs) => {
             return mcast.length > 0;
         });
     } else { /* choose manually */
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
         allSources.forEach(function(e: any, i: number) {
             console.log(`${i + 1}: ${e.meta.label}: ${JSON.stringify(e.sdp.streams)}`);
         });
         const index = await askForNumber('Choose source number (defaut 0): ', rl);
         sources = [allSources[index - 1]];
+        rl.close();
     }
-    console.log(`${JSON.stringify(sources)}`);
+    console.log(`${JSON.stringify(sources.map(e => e.meta.label))}`);
 
     console.log('---------------------------------');
     //const captureDuration = await askForNumber('Enter capture duration (default 1 seconds): ', rl);
     const captureDuration = CAPTURE_DURATION;
 
-    var loopCount :number = 0;
-    var errorCount :number = 0;
+    var loopCount: number = 0;
+    var errorCount: number = 0;
     while(true) { /* run once if no freerun */
         const datetime = new Date();
         loopCount += 1;
@@ -69,75 +109,63 @@ export const run = async (args: IArgs) => {
 
         /* Start the capture */
         const filename = `auto-${datetime.toISOString()}-${sources[0].meta.label}`;
-        await list.live.startCapture(filename, captureDuration * 1000, sources.map(e => e.id));
+        var pcap: PcapFileProcessingDone;
         console.log(`Capturing ${captureDuration} s`);
-        await sleep(captureDuration * 1000);
+        try {
+            const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
-        /* Pull analysis */
-        const start = new Date();
-        var res: any [] = [];
-        var waitCount : number = 0;
-        while (res.length == 0) {
-            waitCount += 1;
-            if (waitCount > (captureDuration * 3)) {
-                console.log('Analysis timeout.');
-                break;
-            }
-            await sleep(1000);
-            //console.log('.');
-            const allAnalysis = await list.pcap.getAll();
-            res = allAnalysis.filter((e: any) => (e.file_name == filename) &&
-                                                  e.analyzed &&
-                                                  (typeof e.summary !== 'undefined'));
+            pcap = await doCapture(list, filename, captureDuration, sources.map(e => e.id), callback);
+        } catch (err) {
+            console.error(`Error during capture or analysis: ${err.toString()}`);
+            break;
         }
-        const stop = new Date();
-        if (waitCount > (captureDuration * 2)) {
-            continue;
-        }
-        console.log(`Analysing ${Math.abs(stop.getTime() - start.getTime())/1000} s`);
 
         /* Handle result */
-        const analysis = res[0];
-        if (freerun) {
+        if (freerun) { /* save up to ERROR_COUNT_LIMIT pcaps or autoremove */
             try {
-                if ((analysis.error != '') ||
-                        (analysis.summary.error_list.length > 0) ||
-                        (analysis.total_streams != multicasts.length)) {
+                if ((pcap.error != '') ||
+                        (pcap.summary.error_list.length > 0) ||
+                        (pcap.total_streams != multicasts.length)) {
                     errorCount += 1;
                     console.log('Errors detected in Pcap:');
-                    console.log(util.inspect(analysis, false, null, true));
+                    console.log(util.inspect(pcap, false, null, true));
                     console.log('Streams:');
-                    const streams : any [] = await list.pcap.getStreams(analysis.id);
+                    const streams: any [] = await list.pcap.getStreams(pcap.id);
                     console.log(util.inspect(streams, false, null, true));
                     if (errorCount > ERROR_COUNT_LIMIT) {
                         console.log('Maximum error count reached, exit.');
                         break;
                     }
                 } else {
-                    const streams : any [] = await list.pcap.getStreams(analysis.id);
-                    const ts : number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
-                    console.error(`ts+++++++++++++++++++++++++++++++++++++++++++++++++++: ${Math.floor(ts)} s`);
-                    await list.pcap.delete(analysis.id);
+                    const streams: any [] = await list.pcap.getStreams(pcap.id);
+                    const ts_start: number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
+                    const ts_stop: number = parseInt(streams[0].statistics.last_packet_ts) / 1000000000;
+                    console.error(` ts: ${ts_start.toFixed(1)} ..  ${ts_stop.toFixed(1)} sec`);
+                    await list.pcap.delete(pcap.id);
                 }
             } catch (err) {
                 console.error(`Error get: ${err.toString()}`);
-                console.log(analysis)
+                console.log(pcap)
             }
         } else { /* run once, show and exit */
             console.log('Pcap:');
-            console.log(util.inspect(analysis, false, null, true));
+            console.log(util.inspect(pcap, false, null, true));
             console.log('Streams:');
-            console.log(await list.pcap.getStreams(analysis.id));
+            console.log(await list.pcap.getStreams(pcap.id));
             console.log('Errors:');
-            console.log(analysis.summary.error_list);
+            console.log(pcap.summary.error_list);
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+            });
             if (await askForConfirmation('Do you want to delete pcap? [y/n]', rl) == true) {
-                await list.pcap.delete(analysis.id);
+                await list.pcap.delete(pcap.id);
             }
+            rl.close();
             break;
         }
     }
 
-    rl.close();
     await list.close();
 };
 
