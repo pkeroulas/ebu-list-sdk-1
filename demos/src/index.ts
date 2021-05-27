@@ -20,12 +20,12 @@ const parser = yargs(process.argv.slice(2))
     )
     .command('live-capture', 'Do a live capture and analyze (requires a capture engine).')
     .example(
-        '$0 live-capture -b https://my-live-ebu-list -u demo -p demo',
-        'Ask the user to select the one to be captured and analized and ask if pcap must be saved'
+        '$0 live-capture -b https://my-live-ebu-list -u demo -p demo -d 10',
+        'Ask the user to select the source to be captured (for 10sec) and analized and ask if pcap must be saved'
     )
     .example(
         '$0 live-capture -b https://list.ebu.io -f -u demo -p demo -m "239.0.0.1,239.0.0.2"',
-        'Find live sources from multicasts list, repeat the capture-and-analyze loop forever and save faulty analysis'
+        'Find live sources from multicasts list, ask for capture duration, repeat the capture-and-analyze loop forever and save faulty analysis'
     )
     .demandCommand(1, 1)
     .help('h')
@@ -36,6 +36,7 @@ const parser = yargs(process.argv.slice(2))
         password: { type: 'string', alias: 'p', nargs: 1, demandOption: true, describe: 'The password' },
         multicasts: { type: 'string', alias: 'm', nargs: 1, demandOption: false, describe: 'The stream multicast addresses list' },
         freerun: { type: 'boolean', alias: 'f', nargs: 0, demandOption: false, describe: 'Flag for free-running live capture and analysis' },
+        duration: { type: 'number', alias: 'd', nargs: 1, demandOption: false, describe: 'Live capture duration in sec' },
     })
     .wrap(yargs.terminalWidth())
     .epilog('© 2021 Bisect Lda');

@@ -97,8 +97,16 @@ export const run = async (args: IArgs) => {
     console.log(`${JSON.stringify(sources.map(e => e.meta.label))}`);
 
     console.log('---------------------------------');
-    //const captureDuration = await askForNumber('Enter capture duration (default 1 seconds): ', rl);
-    const captureDuration = CAPTURE_DURATION;
+    console.log('Capture duration');
+    var captureDuration : number = CAPTURE_DURATION;
+    if (typeof args.duration === 'undefined') {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        captureDuration = await askForNumber(`Enter duration (default ${captureDuration}sec): `, rl);
+        rl.close();
+    }
 
     var loopCount: number = 0;
     var errorCount: number = 0;
