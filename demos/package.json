@@ -27,6 +27,8 @@
         "@bisect/ebu-list-sdk": "^0.1.0",
         "@types/node": "^14.11.2",
         "@types/yargs": "^15.0.10",
+        "@types/uuid": "^8.3.0",
+        "uuid": "^8.3.1",
         "typescript": "^4.0.5",
         "yargs": "^16.1.1"
     }

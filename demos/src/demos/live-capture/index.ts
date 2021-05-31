@@ -72,7 +72,7 @@ export const run = async (args: IArgs) => {
     console.log('---------------------------------');
     const del = await askForConfirmation('Do you want to delete pcap? [y/n]');
     if (del == true) {
-        await list.pcap.del(res[0].id);
+        await list.pcap.delete(res[0].id);
     }
 
     rl.close();

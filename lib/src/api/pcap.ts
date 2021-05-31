@@ -26,6 +26,34 @@ export interface IPcapInfo {
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
 
+export interface PcapFileProcessingDone {
+    analyzed: boolean;
+    error: any;
+    offset_from_ptp_clock: number;
+    anc_streams: number;
+    audio_streams: number;
+    video_streams: number;
+    total_streams: number;
+    narrow_linear_streams: number;
+    narrow_streams: number;
+    not_compliant_streams: number;
+    wide_streams: number;
+    generated_from_network: boolean;
+    truncated: boolean;
+    _id: string;
+    id: string;
+    __v: number;
+    analyzer_version: string;
+    capture_date: number;
+    capture_file_name: string;
+    date: number;
+    file_name: string;
+    pcap_file_name: string;
+    analysis_profile: { id: string; label: string; timestamp: { source: string } };
+    summary: { error_list: IProblem[]; warning_list: IProblem[] };
+    progress: number;
+}
+
 export type Rate = '24000/1001' | '24' | '25' | '30000/1001' | '30' | '50' | '60000/1001' | '60';
 export type Colorimetry = 'BT601' | 'BT709' | 'BT2020';
 export type ColorSampling = 'YCbCr-4:2:2';
