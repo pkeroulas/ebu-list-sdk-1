@@ -1,10 +1,18 @@
 import { Transport } from '@bisect/bisect-core-ts';
 import { IFrameInfo } from './api/stream';
+import { IStreamInfo } from './types';
 
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Stream {
     public constructor(private readonly transport: Transport) {}
+
+    // Get stream info by id
+    public async getStreamInfo(pcapID: string, streamID: string | undefined): Promise<IStreamInfo> {
+        const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}`);
+        const streamInfo: IStreamInfo = response as IStreamInfo;
+        return streamInfo;
+    }
 
     // Video
     public async getFramesFromStream(pcapID: string, streamID: string | undefined): Promise<IFrameInfo[]> {

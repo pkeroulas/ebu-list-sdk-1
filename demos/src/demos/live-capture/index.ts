@@ -173,7 +173,6 @@ export const run = async (args: IArgs) => {
             break;
         }
     }
-
     await list.close();
 };
 

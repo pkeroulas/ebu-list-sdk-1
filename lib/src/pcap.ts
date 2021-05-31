@@ -1,7 +1,9 @@
-import { Transport } from '@bisect/bisect-core-ts';
+import { logger, Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
-import { IPcapInfo, IStreamInfo } from './api/pcap';
+import { IPcapInfo, IStreamInfo, PcapFileProcessingDone } from './api/pcap';
 import AnalysisProfile from './analysisProfile';
+import { wsEvents } from './api';
+import { IPutEntry } from '@bisect/bisect-core-ts/dist/rest/common';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -28,18 +30,33 @@ export default class Pcap {
         return streams;
     }
 
+    public makeUploadAwaiter(pcapId: string, timeoutMs: number): Promise<PcapFileProcessingDone | undefined> {
+        return this.transport.makeAwaiter<PcapFileProcessingDone | undefined>(
+            wsEvents.Pcap.processingDone,
+            (data: any) => {
+                if (data.id === pcapId) {
+                    return data as PcapFileProcessingDone;
+                }
+                return undefined;
+            },
+            timeoutMs
+        );
+    }
+
     // name: the name that will show up on LIST
     // stream: e.g. fs.createReadStream(path)
-    public async upload(name: string, stream: any, callback: UploadProgressCallback): Promise<IPcapUploadResult> {
-        const result = await this.transport.putForm(
-            '/api/pcap',
-            [
-                { name: 'pcap', value: stream },
-                { name: 'originalFilename', value: name },
-            ],
-            callback
-        );
-
+    public async upload(
+        name: string,
+        stream: any,
+        callback: UploadProgressCallback,
+        pcapId?: string
+    ): Promise<IPcapUploadResult> {
+        const uploadEntry: IPutEntry[] = [
+            { name: 'pcap', value: stream },
+            { name: 'originalFilename', value: name },
+        ];
+        const id = pcapId ? `/?pcapID=${pcapId}` : '';
+        const result = await this.transport.putForm(`/api/pcap${id}`, uploadEntry, callback);
         return result as IPcapUploadResult;
     }
 
