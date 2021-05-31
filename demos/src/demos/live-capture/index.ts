@@ -7,18 +7,15 @@ import * as util from 'util';
 const CAPTURE_DURATION = 10; /* sec */
 const ERROR_COUNT_LIMIT = 10;
 
-const askForNumber = async (question: string, readline: any): Promise<number> => {
-    return new Promise((resolve) => {
-        readline.question(question, (answer: string) => {
-            resolve(parseInt(answer));
-        });
+const readFromUser = async (question: string): Promise<string> => {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
     });
-};
-
-const askForConfirmation = async (question: string, readline: any): Promise<boolean> => {
     return new Promise((resolve) => {
-        readline.question(question, (answer: string) => {
-            resolve(answer === 'y');
+        rl.question(question, (answer: string) => {
+            rl.close();
+            resolve(answer);
         });
     });
 };
@@ -83,16 +80,11 @@ export const run = async (args: IArgs) => {
             return mcast.length > 0;
         });
     } else { /* choose manually */
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
         allSources.forEach(function(e: any, i: number) {
             console.log(`${i + 1}: ${e.meta.label}: ${JSON.stringify(e.sdp.streams)}`);
         });
-        const index = await askForNumber('Choose source number (defaut 0): ', rl);
+        const index = parseInt(await readFromUser('Choose source number (defaut 0): '));
         sources = [allSources[index - 1]];
-        rl.close();
     }
     console.log(`${JSON.stringify(sources.map(e => e.meta.label))}`);
 
@@ -100,12 +92,7 @@ export const run = async (args: IArgs) => {
     console.log('Capture duration');
     var captureDuration : number = CAPTURE_DURATION;
     if (typeof args.duration === 'undefined') {
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
-        captureDuration = await askForNumber(`Enter duration (default ${captureDuration}sec): `, rl);
-        rl.close();
+        captureDuration = parseInt(await readFromUser(`Enter duration (default ${captureDuration}sec): `));
     }
 
     var loopCount: number = 0;
@@ -162,14 +149,9 @@ export const run = async (args: IArgs) => {
             console.log(await list.pcap.getStreams(pcap.id));
             console.log('Errors:');
             console.log(pcap.summary.error_list);
-            const rl = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout,
-            });
-            if (await askForConfirmation('Do you want to delete pcap? [y/n]', rl) == true) {
+            if (await readFromUser('Do you want to delete pcap?  [y/n]') === 'y') {
                 await list.pcap.delete(pcap.id);
             }
-            rl.close();
             break;
         }
     }
