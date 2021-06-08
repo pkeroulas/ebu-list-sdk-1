@@ -72,6 +72,8 @@ export const run = async (args: IArgs) => {
     var captureDuration : number = CAPTURE_DURATION;
     if (typeof args.duration === 'undefined') {
         captureDuration = parseInt(await readFromUser(`Enter duration (default ${captureDuration}sec): `));
+    } else {
+        captureDuration = args.duration;
     }
 
     var loopCount: number = 0;
