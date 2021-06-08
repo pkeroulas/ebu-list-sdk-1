@@ -1,6 +1,5 @@
 import { LIST, types } from '@bisect/ebu-list-sdk';
-import { IArgs, IEventInfo, PcapFileProcessingDone } from '../../types';
-import websocketEventsEnum from '../websocketEventsEnum';
+import { IArgs, PcapFileProcessingDone } from '../../types';
 import * as readline from 'readline';
 import * as util from 'util';
 
@@ -29,38 +28,18 @@ const sleep = async (ms: number) => {
 const doCapture = async (list: LIST, filename: string, captureDuration: number,
         sources: string [], callback: types.UploadProgressCallback): Promise<PcapFileProcessingDone> =>
     new Promise(async (resolve, reject) => {
-        const wsClient = list.wsClient;
-        if (wsClient === undefined) {
-            reject(new Error('WebSocket client not connected'));
+        const start = new Date();
+
+        await list.live.startCapture(filename, captureDuration * 1000, sources);
+        const captureResult = await list.live.makeCaptureAwaiter(filename, 10 * captureDuration * 1000);
+        if (!captureResult) {
+            reject(new Error('Pcap capture and processing undefined'));
             return;
         }
 
-        const start = new Date();
-        let messages: IEventInfo[] = [];
-
-        const handleMessage = (msg: IEventInfo) => {
-            messages.push(msg);
-            messages.forEach(msg => processMessage(msg));
-            messages = [];
-        };
-
-        wsClient.on('message', handleMessage);
-
-        const processMessage = (msg: IEventInfo) => {
-            //console.log(JSON.stringify(msg.event));
-            if (msg.event != websocketEventsEnum.PCAP.FILE_PROCESSING_DONE) {
-                return;
-            }
-            const pcap: PcapFileProcessingDone = msg.data as PcapFileProcessingDone;
-            if (pcap.file_name != filename) {
-                return;
-            }
-            wsClient.off('message', handleMessage);
-            const stop = new Date();
-            console.log(`Analyzed in ${Math.abs(stop.getTime() - start.getTime())/1000} s`);
-            resolve(pcap);
-        };
-        await list.live.startCapture(filename, captureDuration * 1000, sources);
+        const stop = new Date();
+        console.log(`Captured and analyzed in ${Math.abs(stop.getTime() - start.getTime())/1000} s`);
+        resolve(captureResult);
     });
 
 export const run = async (args: IArgs) => {
