@@ -5,12 +5,6 @@ import { IArgs } from '../../types';
 
 const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.UploadProgressCallback): Promise<string> =>
     new Promise(async (resolve, reject) => {
-        const wsClient = list.wsClient;
-        if (wsClient === undefined) {
-            reject(new Error('WebSocket client not connected'));
-            return;
-        }
-
         let pcapId: string | undefined = uuid();
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
 
