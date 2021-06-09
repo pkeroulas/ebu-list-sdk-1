@@ -1,20 +1,15 @@
 import { LIST, types } from '@bisect/ebu-list-sdk';
 import fs from 'fs';
+import path from 'path';
 import { v1 as uuid } from 'uuid';
 import { IArgs } from '../../types';
 
-const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.UploadProgressCallback): Promise<string> =>
+const doUpload = async (list: LIST, stream: fs.ReadStream, name: string, callback: types.UploadProgressCallback): Promise<string> =>
     new Promise(async (resolve, reject) => {
-        const wsClient = list.wsClient;
-        if (wsClient === undefined) {
-            reject(new Error('WebSocket client not connected'));
-            return;
-        }
-
         let pcapId: string | undefined = uuid();
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
 
-        const upload = await list.pcap.upload('A pcap file', stream, callback, pcapId);
+        const upload = await list.pcap.upload(name, stream, callback, pcapId);
         const uploadAwaiter = list.pcap.makeUploadAwaiter(upload.uuid, timeoutMs);
         const uploadResult = await uploadAwaiter;
 
@@ -24,7 +19,7 @@ const doUpload = async (list: LIST, stream: fs.ReadStream, callback: types.Uploa
         }
         console.log(`User Pcap Id: ${pcapId}`);
 
-        console.log(`Awaiter: ${JSON.stringify(uploadResult)}`);
+        console.log(`Pcap: ${JSON.stringify(uploadResult)}`);
 
         pcapId = uploadResult.id;
 
@@ -49,10 +44,11 @@ export const run = async (args: IArgs) => {
         await list.login(args.username, args.password);
 
         const stream = fs.createReadStream(pcapFile);
+        const basename = path.basename(pcapFile, 'pcap')
 
         const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
-        const pcapId = await doUpload(list, stream, callback);
+        const pcapId = await doUpload(list, stream, basename, callback);
 
         console.log(`PCAP ID: ${pcapId}`);
     } catch (err) {
