@@ -4,6 +4,9 @@ export interface IArgs {
     username: string;
     password: string;
     pcapFile?: string;
+    multicasts?: string; // "mcast1,mcast2,..."
+    freerun?: boolean;
+    duration?: number;
 }
 
 export interface PcapFileReceived {

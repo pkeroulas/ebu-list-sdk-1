@@ -12,6 +12,7 @@ export interface IPcapInfo {
     audio_streams: number; // Number of audio streams
     capture_date: number; // capture date, extracted from the pcap file
     date: number; // date of analysis
+    error: string; // pcap processing errors
     file_name: string; // TODO check this
     id: string; // unique id of the pcap
     narrow_linear_streams: number; // ST2110-21
@@ -69,7 +70,7 @@ export interface IST2110VideoInfo {
     max_tro_ns: number; // ST2110-21, nanoseconds
     min_tro_ns: number; // ST2110-21, nanoseconds
     packets_per_frame: number; // number of packets per frame
-    packing_mode: number; // TODO check this
+    packing_mode: number; // pixel group packing mode, e.g. Block or General
     rate: Rate; // Frame or field rate, as a fraction
     sampling: ColorSampling;
     scan_type: ScanType;

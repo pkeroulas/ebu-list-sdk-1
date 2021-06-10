@@ -2,14 +2,9 @@ import { LIST } from '@bisect/ebu-list-sdk';
 import { IArgs } from '../../types';
 import * as readline from 'readline';
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-})
-
-const askForNumber = function (question: string): Promise<number> {
+const askForNumber = function (question: string, readline: any): Promise<number> {
     return new Promise((resolve, reject) => {
-        rl.question(question, (answer) => {
+        readline.question(question, (answer: string) => {
             resolve(parseInt(answer));
         })
     })
@@ -19,6 +14,10 @@ export const run = async (args: IArgs) => {
     const list = new LIST(args.baseUrl);
     await list.login(args.username, args.password);
     const pcaps = await list.pcap.getAll();
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    })
 
     while (true) {
         console.log('------------------\nPcap list:\n------------------');
@@ -27,7 +26,7 @@ export const run = async (args: IArgs) => {
         });
         console.log('0: quit');
 
-        var index : number = await askForNumber('Choose a pcap number: ');
+        var index : number = await askForNumber('Choose a pcap number: ', rl);
         if (index < 0 || index > (pcaps.length + 1))
             continue;
         else if (index == 0)
@@ -43,7 +42,7 @@ export const run = async (args: IArgs) => {
         });
         console.log('0: quit');
 
-        index = await askForNumber('Choose a stream number: ');
+        index = await askForNumber('Choose a stream number: ', rl);
         if (index < 0 || index > (streams.length + 1))
             continue;
         else if (index == 0)
