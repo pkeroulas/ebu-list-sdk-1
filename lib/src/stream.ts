@@ -141,14 +141,28 @@ export default class Stream {
     }
 
     // Audio Graphs - Delta Packect VS RTP Line Chart
-    public async getAudioPktTsVsRtpTs(
+    public async getAudioPktTsVsRtpTsRaw(
         pcapID: string,
         streamID: string | undefined,
         fromNs: string | undefined,
         toNs: string | undefined
     ): Promise<any> {
         const response = await this.transport.get(
-            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTs?from=${fromNs}&to=${toNs}`
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTsRaw?from=${fromNs}&to=${toNs}`
+        );
+        const data: any = response;
+        return data;
+    }
+    // Audio Graphs - Delta Packect VS RTP Line Chart (down-sampled)
+    public async getAudioPktTsVsRtpTsGrouped(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        groupNs: string | undefined,
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTsGrouped?from=${fromNs}&to=${toNs}&group=${groupNs}`
         );
         const data: any = response;
         return data;
