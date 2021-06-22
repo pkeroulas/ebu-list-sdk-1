@@ -48,6 +48,12 @@ export default class LIST {
             };
             this.transport = new Transport(this.rest, wsGetter);
 
+            const token = this.getToken();
+            if (token) {
+                console.log('New instance of list');
+                this.setToken(token);
+            }
+
             unwinder.reset();
         } finally {
             unwinder.unwind();
