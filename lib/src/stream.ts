@@ -159,7 +159,7 @@ export default class Stream {
         streamID: string | undefined,
         fromNs: string | undefined,
         toNs: string | undefined,
-        groupNs: string | undefined,
+        groupNs: string | undefined
     ): Promise<any> {
         const response = await this.transport.get(
             `/api/pcap/${pcapID}/stream/${streamID}/analytics/AudioPktTsVsRtpTsGrouped?from=${fromNs}&to=${toNs}&group=${groupNs}`

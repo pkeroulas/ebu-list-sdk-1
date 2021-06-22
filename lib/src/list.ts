@@ -39,13 +39,22 @@ export default class LIST {
             this.authClient = new AuthClient(apiHandler, storage);
             unwinder.add(() => this.authClient.close());
 
-            this.rest = new RestClient(baseUrl, this.authClient.getToken.bind(this.authClient));
             const wsGetter = () => {
                 if (this.ws === undefined) {
                     throw new Error('Not logged in');
                 }
                 return this.ws.client;
             };
+            const unauthorizedResponse = (code: number | undefined): boolean => {
+                if (code === 401 || code === 402 || code === 403) {
+                    options.handleUnauthorized?.();
+                    return false;
+                }
+
+                return true;
+            };
+            this.rest = new RestClient(baseUrl, this.authClient.getToken.bind(this.authClient), unauthorizedResponse);
+
             this.transport = new Transport(this.rest, wsGetter);
 
             const token = this.getToken();

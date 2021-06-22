@@ -54,6 +54,7 @@ export interface ILocalStorageHandler {
 
 export interface IListOptions {
     tokenStorage?: ILocalStorageHandler;
+    handleUnauthorized?: () => void;
 }
 
 // Download Manager
