@@ -59,7 +59,6 @@ export default class LIST {
 
             const token = this.getToken();
             if (token) {
-                console.log('New instance of list');
                 this.setToken(token);
             }
 
