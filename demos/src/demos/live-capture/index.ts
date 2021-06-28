@@ -31,7 +31,7 @@ const doCapture = async (list: LIST, filename: string, captureDuration: number,
         const start = new Date();
 
         await list.live.startCapture(filename, captureDuration * 1000, sources);
-        const captureResult = await list.live.makeCaptureAwaiter(filename, 10 * captureDuration * 1000);
+        const captureResult = await list.live.makeCaptureAwaiter(filename, 3 * captureDuration * 1000);
         if (!captureResult) {
             reject(new Error('Pcap capture and processing undefined'));
             return;
@@ -41,6 +41,15 @@ const doCapture = async (list: LIST, filename: string, captureDuration: number,
         console.log(`Captured and analyzed in ${Math.abs(stop.getTime() - start.getTime())/1000} s`);
         resolve(captureResult);
     });
+
+const dumpPcap = (pcap: any, streams: any) => {
+    console.log('Pcap:');
+    console.log(util.inspect(pcap, false, null, true));
+    console.log('Streams:');
+    console.log(util.inspect(streams, false, null, true));
+    console.log('Errors:');
+    console.log(pcap.summary.error_list);
+};
 
 export const run = async (args: IArgs) => {
     const list = new LIST(args.baseUrl);
@@ -69,9 +78,10 @@ export const run = async (args: IArgs) => {
 
     console.log('---------------------------------');
     console.log('Capture duration');
-    var captureDuration : number = CAPTURE_DURATION;
+    var captureDuration : number;
     if (typeof args.duration === 'undefined') {
-        captureDuration = parseInt(await readFromUser(`Enter duration (default ${captureDuration}sec): `));
+        const r = parseInt(await readFromUser(`Enter duration (default ${CAPTURE_DURATION}sec): `));
+        captureDuration = isNaN(r)?  CAPTURE_DURATION : r;
     } else {
         captureDuration = args.duration;
     }
@@ -79,12 +89,12 @@ export const run = async (args: IArgs) => {
     var loopCount: number = 0;
     var errorCount: number = 0;
     while(true) { /* run once if no freerun */
-        const datetime = new Date();
+        const datetime = new Date().toLocaleString().split(" ").join("-").split("/").join("-");
         loopCount += 1;
-        console.log(`${datetime.toISOString()}--------------${errorCount}/${loopCount}`);
+        console.log(`${datetime}--------------${errorCount}/${loopCount}`);
 
         /* Start the capture */
-        const filename = `auto-${datetime.toISOString()}-${sources[0].meta.label}`;
+        const filename = `auto-${datetime}-${sources[0].meta.label}`;
         var pcap: PcapFileProcessingDone;
         console.log(`Capturing ${captureDuration} s`);
         try {
@@ -93,46 +103,66 @@ export const run = async (args: IArgs) => {
             pcap = await doCapture(list, filename, captureDuration, sources.map(e => e.id), callback);
         } catch (err) {
             console.error(`Error during capture or analysis: ${err.toString()}`);
-            break;
+            if (freerun) {
+                continue;
+            } else{
+                break;
+            }
+        }
+
+        var streams: any [] = [];
+        console.log(`Getting streams`);
+        try {
+            streams = await list.pcap.getStreams(pcap.id);
+        } catch (err) {
+            console.error(`Get streams error: ${err.toString()}`);
         }
 
         /* Handle result */
         if (freerun) { /* save up to ERROR_COUNT_LIMIT pcaps or autoremove */
             try {
+                const ts_start: number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
+                const ts_stop: number = parseInt(streams[0].statistics.last_packet_ts) / 1000000000;
+                console.log(` ts: ${ts_start.toFixed(1)} ..  ${ts_stop.toFixed(1)} sec`);
+
                 if ((pcap.error != '') ||
                         (pcap.summary.error_list.length > 0) ||
                         (pcap.total_streams != multicasts.length)) {
-                    errorCount += 1;
-                    console.log('Errors detected in Pcap:');
-                    console.log(util.inspect(pcap, false, null, true));
-                    console.log('Streams:');
-                    const streams: any [] = await list.pcap.getStreams(pcap.id);
-                    console.log(util.inspect(streams, false, null, true));
-                    if (errorCount > ERROR_COUNT_LIMIT) {
-                        console.log('Maximum error count reached, exit.');
-                        break;
+
+                    /* Refine the error filter. Exple: enlarge RTP_vs_pkt range
+                    const rtp_error_reducer = (acc: any, cur: any) => acc + (
+                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.min < -60) ||
+                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.max > 4000))? 1 : 0;
+                    if (streams.reduce(rtp_error_reducer, 0) > 0) {
+                        dumpPcap(pcap, streams.filter((s: any) => s.error_list.length > 0));
+                        errorCount += 1;
+                        if (errorCount > ERROR_COUNT_LIMIT) {
+                            console.log('Maximum error count reached, exit.');
+                            break;
+                        }
+                        continue; // keep pcap
                     }
-                } else {
-                    const streams: any [] = await list.pcap.getStreams(pcap.id);
-                    const ts_start: number = parseInt(streams[0].statistics.first_packet_ts) / 1000000000;
-                    const ts_stop: number = parseInt(streams[0].statistics.last_packet_ts) / 1000000000;
-                    console.error(` ts: ${ts_start.toFixed(1)} ..  ${ts_stop.toFixed(1)} sec`);
-                    await list.pcap.delete(pcap.id);
+                    */
+
+                    continue; /* keep pcap */
                 }
             } catch (err) {
-                console.error(`Error get: ${err.toString()}`);
-                console.log(pcap)
+                console.error(`Analysis parsing error: ${err.toString()}`);
             }
         } else { /* run once, show and exit */
-            console.log('Pcap:');
-            console.log(util.inspect(pcap, false, null, true));
-            console.log('Streams:');
-            console.log(await list.pcap.getStreams(pcap.id));
-            console.log('Errors:');
-            console.log(pcap.summary.error_list);
-            if (await readFromUser('Do you want to delete pcap?  [y/n]') === 'y') {
-                await list.pcap.delete(pcap.id);
+            dumpPcap(pcap, streams);
+            if (await readFromUser('Do you want to delete pcap?  [y/n]') !== 'y') {
+                break;
             }
+        }
+
+        try {
+            await list.pcap.delete(pcap.id);
+        } catch (err) {
+            console.error(`Deletion error: ${err.toString()}`);
+        }
+
+        if (!freerun) {
             break;
         }
     }
