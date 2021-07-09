@@ -4,7 +4,7 @@ import * as readline from 'readline';
 import * as util from 'util';
 
 const CAPTURE_DURATION = 10; /* sec */
-const ERROR_COUNT_LIMIT = 10;
+const ERROR_COUNT_LIMIT = 100;
 
 const readFromUser = async (question: string): Promise<string> => {
     const rl = readline.createInterface({
@@ -129,10 +129,12 @@ export const run = async (args: IArgs) => {
                         (pcap.summary.error_list.length > 0) ||
                         (pcap.total_streams != multicasts.length)) {
 
-                    /* Refine the error filter. Exple: enlarge RTP_vs_pkt range
+                    /* Refine the error filter. Exple: enlarge RTP_vs_pkt range */
+                    /*
                     const rtp_error_reducer = (acc: any, cur: any) => acc + (
-                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.min < -60) ||
-                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.max > 4000))? 1 : 0;
+                        (cur.global_audio_analysis.packet_ts_vs_rtp_ts.range.min < -70) ||
+                        (cur.global_audio_analysis.tsdf.result === 'not_compliant') ||
+                        (cur.analyses.rtp_sequence.result === 'not_compliant'))? 1 : 0;
                     if (streams.reduce(rtp_error_reducer, 0) > 0) {
                         dumpPcap(pcap, streams.filter((s: any) => s.error_list.length > 0));
                         errorCount += 1;
