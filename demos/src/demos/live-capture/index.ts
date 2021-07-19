@@ -45,10 +45,8 @@ const doCapture = async (list: LIST, filename: string, captureDuration: number,
 const dumpPcap = (pcap: any, streams: any) => {
     console.log('Pcap:');
     console.log(util.inspect(pcap, false, null, true));
-    console.log('Streams:');
-    console.log(util.inspect(streams, false, null, true));
-    console.log('Errors:');
-    console.log(pcap.summary.error_list);
+    console.error(JSON.stringify(streams, null,'\t')); // to stderr for separate parsing
+    console.error(',');
 };
 
 export const run = async (args: IArgs) => {
@@ -128,6 +126,7 @@ export const run = async (args: IArgs) => {
                 if ((pcap.error != '') ||
                         (pcap.summary.error_list.length > 0) ||
                         (pcap.total_streams != multicasts.length)) {
+                    dumpPcap(pcap, streams.filter((s: any) => s.error_list.length > 0));
 
                     /* Refine the error filter. Exple: enlarge RTP_vs_pkt range */
                     /*
@@ -136,13 +135,13 @@ export const run = async (args: IArgs) => {
                         (cur.global_audio_analysis.tsdf.result === 'not_compliant') ||
                         (cur.analyses.rtp_sequence.result === 'not_compliant'))? 1 : 0;
                     if (streams.reduce(rtp_error_reducer, 0) > 0) {
-                        dumpPcap(pcap, streams.filter((s: any) => s.error_list.length > 0));
                         errorCount += 1;
+                        console.log('Important error!!! Keep this pcap');
                         if (errorCount > ERROR_COUNT_LIMIT) {
                             console.log('Maximum error count reached, exit.');
                             break;
                         }
-                        continue; // keep pcap
+                        continue;
                     }
                     */
 
