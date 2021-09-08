@@ -18,11 +18,9 @@ export const run = async (args: IArgs) => {
 
         const stream = fs.createReadStream(pcapFile);
         const name = path.basename(pcapFile, 'pcap')
-
-        const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
-
         const pcapId: string = uuid();
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
+        const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
     
         const uploadAwaiter = list.pcap.makeUploadAwaiter(pcapId, timeoutMs);
         await list.pcap.upload(name, stream, callback, pcapId);
