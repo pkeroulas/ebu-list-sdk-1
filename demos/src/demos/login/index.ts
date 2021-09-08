@@ -8,8 +8,8 @@ export const run = async (args: IArgs) => {
         console.log('Connected');
         const version = await list.info.getVersion();
         console.log(JSON.stringify(version));
-    } catch (e) {
-        console.log(`Error: ${JSON.stringify(e)}`);
+    } catch (e: any) {
+        console.log(`Error: ${e.toString()}`);
     } finally {
         await list.close();
     }

@@ -101,7 +101,7 @@ export const run = async (args: IArgs) => {
             const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
             pcap = await doCapture(list, filename, captureDuration, sources.map(e => e.id), callback);
-        } catch (err) {
+        } catch (err: any) {
             console.error(`Error during capture or analysis: ${err.toString()}`);
             if (freerun) {
                 continue;
@@ -114,7 +114,7 @@ export const run = async (args: IArgs) => {
         console.log(`Getting streams`);
         try {
             streams = await list.pcap.getStreams(pcap.id);
-        } catch (err) {
+        } catch (err: any) {
             console.error(`Get streams error: ${err.toString()}`);
         }
 
@@ -146,7 +146,7 @@ export const run = async (args: IArgs) => {
 
                     continue; /* keep pcap */
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error(`Analysis parsing error: ${err.toString()}`);
             }
         } else { /* run once, show and exit */
@@ -158,7 +158,7 @@ export const run = async (args: IArgs) => {
 
         try {
             await list.pcap.delete(pcap.id);
-        } catch (err) {
+        } catch (err: any) {
             console.error(`Deletion error: ${err.toString()}`);
         }
 
