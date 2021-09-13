@@ -108,7 +108,7 @@ export interface IST2110AncInfo {
 }
 
 export type MediaSpecificInfo = IST2110VideoInfo | IST2110AudioInfo | IST2110AncInfo;
-export type MediaType = 'video' | 'audio' | 'ancillary_data' | 'unknown';
+export type MediaType = 'video' | 'audio' | 'ancillary_data' | 'ttml' | 'unknown';
 
 // The reasons why the heuristics deemed the other possible formats as invalid
 export interface IMediaTypeValidation {
