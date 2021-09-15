@@ -8,6 +8,7 @@ export interface IProblem {
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
     analyzer_version: string; // The version of LIST when the analysis was done
+    analysis_profile: { id: string; label: string; timestamp: { source: string } };
     anc_streams: number; // Number of ancillary data streams
     audio_streams: number; // Number of audio streams
     capture_date: number; // capture date, extracted from the pcap file
