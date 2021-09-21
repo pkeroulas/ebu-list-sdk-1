@@ -5,10 +5,22 @@ export interface IProblem {
     };
 }
 
+export interface IAnalysisProfileDetails {
+    id: string;
+    label: string;
+    timestamps: {
+        source: string;
+    };
+    audio: {
+        deltaPktTsVsRtpTsLimit: any;
+        tsdf: any
+    };
+}
+
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
     analyzer_version: string; // The version of LIST when the analysis was done
-    analysis_profile: { id: string; label: string; timestamp: { source: string } };
+    analysis_profile: IAnalysisProfileDetails;
     anc_streams: number; // Number of ancillary data streams
     audio_streams: number; // Number of audio streams
     capture_date: number; // capture date, extracted from the pcap file
@@ -51,7 +63,7 @@ export interface PcapFileProcessingDone {
     date: number;
     file_name: string;
     pcap_file_name: string;
-    analysis_profile: { id: string; label: string; timestamp: { source: string } };
+    analysis_profile: IAnalysisProfileDetails;
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
     progress: number;
 }
@@ -206,16 +218,7 @@ export interface IPcapFileReceived {
     progress: number;
 }
 
-export interface IAnalysisProfileDetails {
-    id: string;
-    label: string;
-    timestamps: {
-        source: string;
-    };
-}
-
-export interface IAnalysisProfile {
+export interface IAnalysisProfiles {
     all: IAnalysisProfileDetails[];
-
     default: string;
 }

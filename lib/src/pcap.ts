@@ -1,7 +1,6 @@
 import { logger, Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo, PcapFileProcessingDone } from './api/pcap';
-import AnalysisProfile from './analysisProfile';
 import { wsEvents } from './api';
 import { IPutEntry } from '@bisect/bisect-core-ts/dist/rest/common';
 
@@ -58,10 +57,6 @@ export default class Pcap {
         const id = pcapId ? `/?pcapID=${pcapId}` : '';
         const result = await this.transport.putForm(`/api/pcap${id}`, uploadEntry, callback);
         return result as IPcapUploadResult;
-    }
-
-    public get analysisProfile(): AnalysisProfile {
-        return new AnalysisProfile(this.transport);
     }
 
     public async downloadPcap(pcapId: string): Promise<any> {

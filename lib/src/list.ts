@@ -3,6 +3,7 @@ import * as apiTypes from './api';
 import { AuthClient, ILoginData, IApiHandler, IGenericResponse, ILoginResponse } from './auth';
 import Info from './info';
 import User from './user';
+import AnalysisProfile from './analysisProfile';
 import Live from './live';
 import Pcap from './pcap';
 import Stream from './stream';
@@ -104,6 +105,10 @@ export default class LIST {
 
     public get live(): Live {
         return new Live(this.transport);
+    }
+
+    public get analysisProfile(): AnalysisProfile {
+        return new AnalysisProfile(this.transport);
     }
 
     public get pcap(): Pcap {

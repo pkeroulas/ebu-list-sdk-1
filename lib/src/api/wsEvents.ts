@@ -1,3 +1,5 @@
+import { IAnalysisProfileDetails } from './pcap';
+
 export enum Pcap {
     received = 'PCAP_FILE_RECEIVED',
     preProcessed = 'PCAP_FILE_PROCESSED',
@@ -13,11 +15,6 @@ export interface IPcapInitialData {
     pcap_file_name: string;
     date: number;
     progress: number;
-}
-
-export interface IAnalysisProfile {
-    id: string;
-    label: string;
 }
 
 export interface IAnalysisIssue {
@@ -48,7 +45,7 @@ export interface IPcapData {
     capture_date: number;
     capture_file_name: string;
     owner_id: string;
-    analysis_profile: IAnalysisProfile;
+    analysis_profile: IAnalysisProfileDetails;
     summary: IAnalysisSummary;
 }
 
