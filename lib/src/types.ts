@@ -6,7 +6,7 @@ export type IFrameInfo = api.stream.IFrameInfo;
 
 export type IPcapFileReceived = api.pcap.IPcapFileReceived;
 
-export type IAnalysisProfile = api.pcap.IAnalysisProfile;
+export type IAnalysisProfiles = api.pcap.IAnalysisProfiles;
 export type IAnalysisProfileDetails = api.pcap.IAnalysisProfileDetails;
 
 export interface IVersion {

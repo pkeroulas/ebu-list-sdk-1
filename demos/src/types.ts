@@ -52,6 +52,18 @@ export interface IProblem {
     };
 }
 
+export interface IAnalysisProfileDetails {
+    id: string;
+    label: string;
+    timestamps: {
+        source: string;
+    };
+    audio: {
+        deltaPktTsVsRtpTsLimit: any;
+        tsdf: any
+    };
+}
+
 export interface PcapFileProcessingDone {
     analyzed: boolean;
     error: any;
@@ -75,7 +87,7 @@ export interface PcapFileProcessingDone {
     date: number;
     file_name: string;
     pcap_file_name: string;
-    analysis_profile: { id: string; label: string; timestamp: { source: string } };
+    analysis_profile: IAnalysisProfileDetails;
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
     progress: number;
 }
