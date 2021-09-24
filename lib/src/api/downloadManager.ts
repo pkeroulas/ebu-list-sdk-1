@@ -13,4 +13,5 @@ export interface IDownloadManagerDataContent {
 
 export interface IDownloadManagerData {
     data: IDownloadManagerDataContent[];
+    status: number;
 }
