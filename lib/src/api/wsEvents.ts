@@ -9,6 +9,34 @@ export enum Pcap {
     deleted = 'PCAP_FILE_DELETED',
 }
 
+export enum Mp3 {
+    rendered = 'MP3_FILE_RENDERED',
+    failed = 'MP3_FILE_FAILED',
+}
+
+export enum Zip {
+    failed = 'ZIP_FILE_FAILED',
+    complete = 'ZIP_FILE_COMPLETE',
+}
+
+export enum Stream {
+    compare_failed = 'STREAM_COMPARE_FAILED',
+    compare_complete = 'STREAM_COMPARE_COMPLETE',
+    compare_deleted = 'STREAM_COMPARE_DELETED',
+}
+
+export enum Ip {
+    parsed_from_sdp = 'IP_PARSED_FROM_SDP',
+}
+
+export enum Sdp {
+    validation_results = 'SDP_VALIDATION_RESULTS',
+}
+
+export enum LiveSource {
+    list_update = 'LIVE_SOURCE_LIST_UPDATE',
+}
+
 export interface IPcapInitialData {
     id: string;
     file_name: string;

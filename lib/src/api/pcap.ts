@@ -13,7 +13,7 @@ export interface IAnalysisProfileDetails {
     };
     audio: {
         deltaPktTsVsRtpTsLimit: any;
-        tsdf: any
+        tsdf: any;
     };
 }
 
@@ -187,6 +187,18 @@ export interface IStreamStatistics {
     payload_error_count?: number;
 }
 
+export enum ProcessingState {
+    idle,
+    active,
+    completed,
+    failed,
+}
+
+export interface IStreamProcessing {
+    // True if frames have already been extracted
+    extractedFrames: ProcessingState;
+}
+
 export interface IStreamInfo {
     id: string; // Unique ID of the stream
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
@@ -199,6 +211,7 @@ export interface IStreamInfo {
     state: StreamState;
     statistics: IStreamStatistics;
     analyses: IStreamAnalyses;
+    processing: IStreamProcessing;
 }
 
 export interface IStreamAnalyses {
