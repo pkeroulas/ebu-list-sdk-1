@@ -188,10 +188,10 @@ export interface IStreamStatistics {
 }
 
 export enum ProcessingState {
-    idle,
-    active,
-    completed,
-    failed,
+    idle = 'IDLE',
+    active = 'ACTIVE',
+    completed = 'COMPLETED',
+    failed = 'FAILED',
 }
 
 export interface IStreamProcessing {

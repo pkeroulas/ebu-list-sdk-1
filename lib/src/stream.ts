@@ -216,4 +216,11 @@ export default class Stream {
         const data: any = response;
         return data;
     }
+
+    // Ancilary Graphs - Packets Per Frame Histogram Chart
+    public async requestFrames(pcapID: string, streamID: string | undefined): Promise<any> {
+        const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/requestFrames`);
+        const data: any = response;
+        return data;
+    }
 }
