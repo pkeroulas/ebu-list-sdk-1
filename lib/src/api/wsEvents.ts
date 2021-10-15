@@ -19,6 +19,12 @@ export enum Zip {
     complete = 'ZIP_FILE_COMPLETE',
 }
 
+export enum ExtractFrames {
+    failed = 'EXTRACT_FRAMES_FAILED',
+    active = 'EXTRACT_FRAMES_ACTIVE',
+    completed = 'EXTRACT_FRAMES_COMPLETED',
+}
+
 export enum Stream {
     compare_failed = 'STREAM_COMPARE_FAILED',
     compare_complete = 'STREAM_COMPARE_COMPLETE',
