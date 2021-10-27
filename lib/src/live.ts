@@ -1,8 +1,7 @@
 import { ILiveSource } from './types';
 import { PcapFileProcessingDone } from './api/pcap';
 import { Transport } from '@bisect/bisect-core-ts';
-import { Workflow } from './api/constants';
-import { wsEvents } from './api';
+import { wsEvents, workflows } from './api';
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +34,7 @@ export default class Live {
                 filename,
                 ids: sources,
             },
-            type: Workflow.liveCapture,
+            type: workflows.types.captureAndIngest,
         };
         this.sendWorkflow(workflow);
     }

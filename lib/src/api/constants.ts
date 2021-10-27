@@ -1,7 +1,3 @@
-export enum Workflow {
-  liveCapture = 'captureAndIngest'
-}
-
 export const analysisConstants = {
   outcome: {
       not_compliant: 'not_compliant',
