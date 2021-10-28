@@ -235,3 +235,14 @@ export interface IAnalysisProfiles {
     all: IAnalysisProfileDetails[];
     default: string;
 }
+
+export interface ILocalPcapAnalysisParams {
+    path: string; // path to file on a filesystem accessible by LIST
+    name: string; // the name that will be assigned to the pcap in LIST
+}
+
+export function isLocalPcapAnalysisParams(p: unknown): p is ILocalPcapAnalysisParams {
+    if (typeof (p as ILocalPcapAnalysisParams).name !== 'string') return false;
+    if (typeof (p as ILocalPcapAnalysisParams).path !== 'string') return false;
+    return true;
+}
