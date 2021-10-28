@@ -7,22 +7,18 @@ export default class StreamComparison {
     public constructor(private readonly transport: Transport) {}
 
     public async getAll(): Promise<any> {
-        const response = await this.transport.get('/api/comparisons');
-        return response;
+        return await this.transport.get('/api/comparisons');
     }
 
     public async getInfo(comparisonID: string): Promise<any> {
-        const response = await this.transport.get(`/api/comparisons/${comparisonID}`);
-        return response;
+        return await this.transport.get(`/api/comparisons/${comparisonID}`);
     }
 
     public async delete(comparisonID: string): Promise<any> {
-        const response = await this.transport.del(`/api/comparisons/${comparisonID}`);
-        return response;
+        return await this.transport.del(`/api/comparisons/${comparisonID}`);
     }
 
     public async postComparison(comparisonID: string, data: any): Promise<any> {
-        const response = await this.transport.post(`/api/comparisons/${comparisonID}`, data);
-        return response;
+        return await this.transport.post(`/api/comparisons/${comparisonID}`, data);
     }
 }
