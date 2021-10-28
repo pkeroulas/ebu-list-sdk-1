@@ -59,6 +59,20 @@ export default class Pcap {
         return result as IPcapUploadResult;
     }
 
+    // pcapId: the ID to assign to the pcap in LIST
+    // path: the path to the file to upload, as seen from LIST. If LIST is running on a Docker container,
+    // it must be the path as it is mapped on the container.
+    // name: the name that will show up on LIST
+    public async uploadLocal(pcapId: string, path: string, name: string): Promise<unknown> {
+        console.log('deleting');
+        const result = await this.transport.post(`/api/pcap/${pcapId}/local`, {
+            path,
+            name,
+        });
+        console.log(`Got: ${JSON.stringify(result)}`);
+        return result;
+    }
+
     public async downloadPcap(pcapId: string): Promise<any> {
         const result = await this.transport.download(`/api/pcap/${pcapId}/download`);
         return result;
