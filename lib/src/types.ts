@@ -30,12 +30,18 @@ export interface ILiveMeta {
     label: string;
 }
 
+export interface ILiveStream {
+    dstAddr: string;
+    dstPort: number;
+}
+
 export interface ISdp {
-    streams: string;
+    streams: ILiveStream[];
 }
 
 export interface ILiveSource {
     id: string;
+    kind: string;
     meta: ILiveMeta;
     sdp: ISdp;
 }

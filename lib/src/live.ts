@@ -8,10 +8,22 @@ import { wsEvents, workflows } from './api';
 export default class Live {
     public constructor(private readonly transport: Transport) {}
 
-    public async getAllSources() {
+    public async getAllSources(): Promise<ILiveSource[]> {
         const response = await this.transport.get('/api/live/sources');
         const sources: ILiveSource[] = response as ILiveSource[];
         return sources;
+    }
+
+    public async addSource(source: ILiveSource): Promise<ILiveSource> {
+        return this.transport.post('/api/live/sources', source);
+    }
+
+    public async updateSource(source: ILiveSource): Promise<ILiveSource> {
+        return this.transport.put(`/api/live/sources/${source.id}`, source);
+    }
+
+    public async deleteSource(sourceId: string): Promise<any>  {
+        return await this.transport.del(`/api/live/sources/${sourceId}`);
     }
 
     public makeCaptureAwaiter(filename: string, timeoutMs: number): Promise<PcapFileProcessingDone | undefined> {
