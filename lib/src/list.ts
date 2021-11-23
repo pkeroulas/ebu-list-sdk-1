@@ -140,7 +140,15 @@ export default class LIST {
         return this.authClient.getToken();
     }
 
-    public setToken(token: string): void {
-        return this.authClient.setToken(token);
+    public async setToken(token: string): Promise<void> {
+        try {
+            this.authClient.setToken(token);
+            if(this.ws === undefined) {
+                const user: apiTypes.user.IUserInfo = (await this.rest.get('/api/user')) as apiTypes.user.IUserInfo;
+                this.ws = new WSCLient(this.baseUrl, '/socket', user.id);
+            }
+        } catch (err) {
+            throw new Error(`Couldn't get websocket from token or user ID: ${JSON.stringify(err)}`);
+        }
     }
 }
