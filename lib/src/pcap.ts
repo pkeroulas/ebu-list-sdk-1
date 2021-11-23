@@ -1,4 +1,4 @@
-import { logger, Transport } from '@bisect/bisect-core-ts';
+import { Transport } from '@bisect/bisect-core-ts';
 import { IPcapUploadResult, UploadProgressCallback } from './types';
 import { IPcapInfo, IStreamInfo, PcapFileProcessingDone } from './api/pcap';
 import { wsEvents } from './api';
@@ -63,13 +63,11 @@ export default class Pcap {
     // path: the path to the file to upload, as seen from LIST. If LIST is running on a Docker container,
     // it must be the path as it is mapped on the container.
     // name: the name that will show up on LIST
-    public async uploadLocal(pcapId: string, path: string, name: string): Promise<unknown> {
-        console.log('deleting');
+    public async uploadLocal(name: string, path: string, pcapId: string): Promise<unknown> {
         const result = await this.transport.post(`/api/pcap/${pcapId}/local`, {
             path,
             name,
         });
-        console.log(`Got: ${JSON.stringify(result)}`);
         return result;
     }
 

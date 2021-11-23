@@ -1,6 +1,7 @@
 import { IAnalysisProfileDetails } from './pcap';
 
 export enum Pcap {
+    capturing = 'PCAP_FILE_CAPTURING',
     received = 'PCAP_FILE_RECEIVED',
     preProcessed = 'PCAP_FILE_PROCESSED',
     analyzing = 'PCAP_FILE_ANALYZING',

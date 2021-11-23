@@ -48,10 +48,10 @@ export default class Live {
             },
             type: workflows.types.captureAndIngest,
         };
-        this.sendWorkflow(workflow);
+        return await this.sendWorkflow(workflow);
     }
 
     private async sendWorkflow(workflow: object) {
-        return this.transport.post('/api/workflow/', workflow);
+        return await this.transport.post('/api/workflow/', workflow);
     }
 }
