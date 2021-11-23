@@ -21,20 +21,20 @@ export const run = async (args: IArgs) => {
         const pcapId: string = uuid();
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
         const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
-    
+
         const uploadAwaiter = list.pcap.makeUploadAwaiter(pcapId, timeoutMs);
         await list.pcap.upload(name, stream, callback, pcapId);
 
         // If on the same file system, could use the following
-        // await list.pcap.uploadLocal(pcapId, pcapFile, name);
-        
+        // await list.pcap.uploadLocal(name, pcapFile, pcapId);
+
         const uploadResult = await uploadAwaiter;
-    
+
         if (!uploadResult) {
             throw new Error('Pcap processing undefined');
         }
         console.log(`Pcap Id: ${pcapId}`);
-    
+
         console.log(`Pcap: ${JSON.stringify(uploadResult)}`);
     } catch (err: any) {
         console.error(`Error uploading file: ${err.toString()}`);
