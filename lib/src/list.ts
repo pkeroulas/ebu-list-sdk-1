@@ -60,7 +60,7 @@ export default class LIST {
 
             const token = this.getToken();
             if (token) {
-                this.setToken(token);
+                this.authClient.setToken(token);
             }
 
             unwinder.reset();
