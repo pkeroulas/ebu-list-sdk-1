@@ -3,7 +3,7 @@ import * as api from './api';
 export type IPcapInfo = api.pcap.IPcapInfo;
 export type IStreamInfo = api.pcap.IStreamInfo;
 export type IFrameInfo = api.stream.IFrameInfo;
-
+export type IPcapFileCapturing = api.pcap.IPcapFileCapturing;
 export type IPcapFileReceived = api.pcap.IPcapFileReceived;
 
 export type IAnalysisProfiles = api.pcap.IAnalysisProfiles;

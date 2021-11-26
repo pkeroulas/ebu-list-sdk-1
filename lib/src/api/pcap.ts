@@ -223,6 +223,12 @@ export interface IStreamAnalysis {
     details?: any;
 }
 
+export interface IPcapFileCapturing {
+    id: string;
+    file_name: string;
+    progress: number;
+}
+
 export interface IPcapFileReceived {
     id: string;
     file_name: string;
