@@ -36,6 +36,7 @@ export interface IPcapInfo {
     total_streams: number; // Total number of streams
     truncated: boolean; // True if the pcap does not contain the complete packet payload
     video_streams: number; // Number of video streams
+    ttml_streams: number; // Number of ttml streams
     wide_streams: number; // ST2110-21
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
@@ -122,6 +123,14 @@ export interface IST2110AncInfo {
 
 export type MediaSpecificInfo = IST2110VideoInfo | IST2110AudioInfo | IST2110AncInfo;
 export type MediaType = 'video' | 'audio' | 'ancillary_data' | 'ttml' | 'unknown';
+export type FullMediaType =
+    | 'video/raw'
+    | 'video/jxsv'
+    | 'audio/L24'
+    | 'audio/L16'
+    | 'video/smpte291'
+    | 'application/ttml+xml'
+    | 'unknown';
 
 // The reasons why the heuristics deemed the other possible formats as invalid
 export interface IMediaTypeValidation {
@@ -203,6 +212,7 @@ export interface IStreamInfo {
     id: string; // Unique ID of the stream
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
     media_type: MediaType;
+    full_media_type: FullMediaType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
     global_video_analysis?: any;
