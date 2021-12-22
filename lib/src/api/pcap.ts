@@ -132,6 +132,11 @@ export type FullMediaType =
     | 'application/ttml+xml'
     | 'unknown';
 
+export type FullTransportType =
+    | 'RIST'
+    | 'RTP'
+    | 'unknown';
+
 // The reasons why the heuristics deemed the other possible formats as invalid
 export interface IMediaTypeValidation {
     anc?: string[]; // 'STATUS_CODE_ANC_WRONG_HEADER' ...
@@ -213,6 +218,7 @@ export interface IStreamInfo {
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
     media_type: MediaType;
     full_media_type: FullMediaType;
+    full_transport_type: FullTransportType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
     global_video_analysis?: any;
