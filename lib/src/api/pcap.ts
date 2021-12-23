@@ -199,6 +199,7 @@ export interface IStreamStatistics {
     wrong_marker_count?: number;
     wrong_field_count?: number;
     payload_error_count?: number;
+    retransmitted_packets?: number; //Total number of retrasmitted packets
 }
 
 export enum ProcessingState {
