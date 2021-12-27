@@ -38,6 +38,7 @@ export interface IPcapInfo {
     video_streams: number; // Number of video streams
     ttml_streams: number; // Number of ttml streams
     wide_streams: number; // ST2110-21
+    srt_streams: number; // SRT
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
 
@@ -132,10 +133,7 @@ export type FullMediaType =
     | 'application/ttml+xml'
     | 'unknown';
 
-export type FullTransportType =
-    | 'RIST'
-    | 'RTP'
-    | 'unknown';
+export type FullTransportType = 'RIST' | 'RTP' | 'SRT' | 'unknown';
 
 // The reasons why the heuristics deemed the other possible formats as invalid
 export interface IMediaTypeValidation {
