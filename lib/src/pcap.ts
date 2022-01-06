@@ -71,6 +71,11 @@ export default class Pcap {
         return result;
     }
 
+    public async updatePcapAnalysis(pcapId: string): Promise<IPcapUploadResult> {
+        const result = await this.transport.patch(`/api/pcap/${pcapId}`, null);
+        return result as IPcapUploadResult;
+    }
+
     public async downloadPcap(pcapId: string): Promise<any> {
         const result = await this.transport.download(`/api/pcap/${pcapId}/download`);
         return result;
