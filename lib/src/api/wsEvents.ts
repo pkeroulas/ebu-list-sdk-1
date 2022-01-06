@@ -94,6 +94,11 @@ export interface IPcapPreProcessedEvent {
     data: IPcapInitialData & Partial<IPcapData>;
 }
 
+export interface IPcapProcessingProgressEvent {
+    event: Pcap.analyzing;
+    data: IPcapInitialData & Partial<IPcapData>;
+}
+
 export interface IPcapProcessingDoneEvent {
     event: Pcap.processingDone;
     data: IPcapInitialData & IPcapData;
@@ -109,6 +114,9 @@ export const isPcapReceivedEvent = (e: any): e is IPcapReceivedEvent =>
 
 export const isPcapPreProcessedEvent = (e: any): e is IPcapPreProcessedEvent =>
     (e as IPcapPreProcessedEvent).event === Pcap.preProcessed;
+
+export const isPcapProcessingProgressEvent = (e: any): e is IPcapProcessingProgressEvent =>
+    (e as IPcapProcessingProgressEvent).event === Pcap.analyzing;
 
 export const isPcapProcessingDoneEvent = (e: any): e is IPcapProcessingDoneEvent =>
     (e as IPcapProcessingDoneEvent).event === Pcap.processingDone;
