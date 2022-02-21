@@ -234,7 +234,7 @@ export interface IStreamAnalyses {
 }
 
 export interface IStreamAnalysis {
-    result: 'compliant' | 'not_compliant';
+    result: 'compliant' | 'not_compliant' | 'disabled';
     details?: any;
 }
 
