@@ -2,6 +2,7 @@ export const analysisConstants = {
   outcome: {
       not_compliant: 'not_compliant',
       compliant: 'compliant',
+      disabled: 'disabled'
   },
   errors: {
       invalid_rtp_ts_vs_nt: 'errors.invalid_rtp_ts_vs_nt',
