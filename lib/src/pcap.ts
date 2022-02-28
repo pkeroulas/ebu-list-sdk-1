@@ -59,6 +59,24 @@ export default class Pcap {
         return result as IPcapUploadResult;
     }
 
+    // name: the name that will show up on LIST
+    // stream: e.g. fs.createReadStream(path)
+    // This is created because we need a new call to only upload a file insted of uploading and analyzing immediatly
+    public async onlyUpload(
+        name: string,
+        stream: any,
+        callback: UploadProgressCallback,
+        pcapId?: string
+    ): Promise<IPcapUploadResult> {
+        const uploadEntry: IPutEntry[] = [
+            { name: 'pcap', value: stream },
+            { name: 'originalFilename', value: name },
+        ];
+        const id = pcapId ? `/?pcapID=${pcapId}` : '';
+        const result = await this.transport.putForm(`/api/pcap/upload${id}`, uploadEntry, callback);
+        return result as IPcapUploadResult;
+    }
+
     // pcapId: the ID to assign to the pcap in LIST
     // path: the path to the file to upload, as seen from LIST. If LIST is running on a Docker container,
     // it must be the path as it is mapped on the container.
