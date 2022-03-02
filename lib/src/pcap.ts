@@ -61,11 +61,10 @@ export default class Pcap {
 
     // name: the name that will show up on LIST
     // stream: e.g. fs.createReadStream(path)
-    // This is created because we need a new call to only upload a file insted of uploading and analyzing immediatly
+    // This is created because we need a new call to only upload a file instead of uploading and analyzing immediatly
     public async onlyUpload(
         name: string,
         stream: any,
-        callback: UploadProgressCallback,
         pcapId?: string
     ): Promise<IPcapUploadResult> {
         const uploadEntry: IPutEntry[] = [
@@ -73,7 +72,7 @@ export default class Pcap {
             { name: 'originalFilename', value: name },
         ];
         const id = pcapId ? `/?pcapID=${pcapId}` : '';
-        const result = await this.transport.putForm(`/api/pcap/upload${id}`, uploadEntry, callback);
+        const result = await this.transport.putForm(`/api/pcap/upload${id}`, uploadEntry);
         return result as IPcapUploadResult;
     }
 
