@@ -62,7 +62,7 @@ export default class Pcap {
     // name: the name that will show up on LIST
     // stream: e.g. fs.createReadStream(path)
     // This is created because we need a new call to only upload a file instead of uploading and analyzing immediatly
-    public async onlyUpload(
+    public async onlyInsertInDatabase(
         name: string,
         stream: any,
         pcapId?: string
@@ -88,8 +88,14 @@ export default class Pcap {
         return result;
     }
 
-    public async updatePcapAnalysis(pcapId: string): Promise<IPcapUploadResult> {
-        const result = await this.transport.patch(`/api/pcap/${pcapId}`, null);
+    public async reanalyze(pcapId: string): Promise<IPcapUploadResult> {
+        const result = await this.transport.put(`/api/pcap/${pcapId}/reanalyze`, null);
+        return result as IPcapUploadResult;
+    }
+
+    
+    public async patch(pcapId: string, data: unknown): Promise<IPcapUploadResult> {
+        const result = await this.transport.patch(`/api/pcap/${pcapId}`, data);
         return result as IPcapUploadResult;
     }
 

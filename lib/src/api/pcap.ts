@@ -39,6 +39,7 @@ export interface IPcapInfo {
     ttml_streams: number; // Number of ttml streams
     wide_streams: number; // ST2110-21
     srt_streams: number; // SRT
+    sdps: Array<string>; //Sdps array
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
 }
 
