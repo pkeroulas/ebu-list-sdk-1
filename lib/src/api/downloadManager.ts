@@ -7,6 +7,7 @@ export interface IDownloadManagerDataContent {
     nameondisk: string;
     path: string;
     type: string;
+    id: string;
     __v: number;
     _id: string;
 }
