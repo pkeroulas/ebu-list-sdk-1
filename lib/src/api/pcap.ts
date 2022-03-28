@@ -41,6 +41,7 @@ export interface IPcapInfo {
     srt_streams: number; // SRT
     sdps: Array<string>; //Sdps array
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
+    sdp_count: number;
 }
 
 export interface PcapFileProcessingDone {
