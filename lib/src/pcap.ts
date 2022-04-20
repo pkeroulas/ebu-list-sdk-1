@@ -7,7 +7,7 @@ import { IPutEntry } from '@bisect/bisect-core-ts/dist/rest/common';
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Pcap {
-    public constructor(private readonly transport: Transport) {}
+    public constructor(private readonly transport: Transport) { }
 
     public async getAll(): Promise<IPcapInfo[]> {
         const response = await this.transport.get('/api/pcap');
@@ -65,6 +65,7 @@ export default class Pcap {
     public async onlyInsertInDatabase(
         name: string,
         stream: any,
+        callback: UploadProgressCallback,
         pcapId?: string
     ): Promise<IPcapUploadResult> {
         const uploadEntry: IPutEntry[] = [
@@ -72,7 +73,7 @@ export default class Pcap {
             { name: 'originalFilename', value: name },
         ];
         const id = pcapId ? `/?pcapID=${pcapId}` : '';
-        const result = await this.transport.putForm(`/api/pcap/upload${id}`, uploadEntry);
+        const result = await this.transport.putForm(`/api/pcap/upload${id}`, uploadEntry, callback);
         return result as IPcapUploadResult;
     }
 
@@ -93,7 +94,7 @@ export default class Pcap {
         return result as IPcapUploadResult;
     }
 
-    
+
     public async patch(pcapId: string, data: unknown): Promise<IPcapUploadResult> {
         const result = await this.transport.patch(`/api/pcap/${pcapId}`, data);
         return result as IPcapUploadResult;
