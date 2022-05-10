@@ -34,3 +34,31 @@ export const analysisConstants = {
         mac_address_analysis: "Repeated MAC addresses"
     },
 };
+
+export const measurements = {
+    C_INST: 'CInst',
+    C_INST_RAW: 'CInstRaw',
+    C_INST_GROUPED: 'CInstGrouped',
+    VRX_IDEAL: 'VrxIdeal',
+    VRX_IDEAL_RAW: 'VrxIdealRaw',
+    VRX_IDEAL_GROUPED: 'VrxIdealGrouped',
+    DELTA_TO_IDEAL_TPR0: 'DeltaToIdealTpr0',
+    DELTA_TO_IDEAL_TPR0_RAW: 'DeltaToIdealTpr0Raw',
+    DELTA_TO_IDEAL_TPR0_GROUPED: 'DeltaToIdealTpr0Grouped',
+    DELTA_RTP_TS_VS_PACKET_TS: 'DeltaRtpTsVsPacketTs',
+    DELTA_RTP_TS_VS_PACKET_TS_RAW: 'DeltaRtpTsVsPacketTsRaw',
+    DELTA_RTP_TS_VS_PACKET_TS_GROUPED: 'DeltaRtpTsVsPacketTsGrouped',
+    DELTA_TO_PREVIOUS_RTP_TS: 'DeltaToPreviousRtpTs',
+    DELTA_TO_PREVIOUS_RTP_TS_RAW: 'DeltaToPreviousRtpTsRaw',
+    DELTA_TO_PREVIOUS_RTP_TS_GROUPED: 'DeltaToPreviousRtpTsGrouped', //was min max
+    DELTA_RTP_VS_NT: 'DeltaRtpVsNt',
+    DELTA_RTP_VS_NT_RAW: 'DeltaRtpVsNtRaw',
+    DELTA_RTP_VS_NT_TICKS_GROUPED: 'DeltaRtpVsNtGrouped', //was min max
+    DELTA_PACKET_TIME_VS_RTP_TIME: 'DeltaPacketTimeVsRtpTime',
+    DELTA_PACKET_TIME_VS_RTP_TIME_RAW: 'DeltaPacketTimeVsRtpTimeRaw',
+    DELTA_PACKET_TIME_VS_RTP_TIME_GROUPED: 'DeltaPacketTimeVsRtpTimeGrouped',
+    AUDIO_PKT_TS_VS_RTP_TS: 'AudioPktTsVsRtpTs',
+    AUDIO_PKT_TS_VS_RTP_TS_RAW: 'AudioPktTsVsRtpTsRaw',
+    AUDIO_PKT_TS_VS_RTP_TS_GROUPED: 'AudioPktTsVsRtpTsGrouped',
+    AUDIO_TIME_STAMPED_DELAY_FACTOR: 'AudioTimeStampedDelayFactor'
+};

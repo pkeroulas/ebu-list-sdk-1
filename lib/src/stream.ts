@@ -5,7 +5,7 @@ import { IStreamInfo } from './types';
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Stream {
-    public constructor(private readonly transport: Transport) {}
+    public constructor(private readonly transport: Transport) { }
 
     // Get stream info by id
     public async getStreamInfo(pcapID: string, streamID: string | undefined): Promise<IStreamInfo> {
@@ -69,6 +69,38 @@ export default class Stream {
         return vrxData;
     }
 
+    public async getMeasurementCount(
+        pcapID: string,
+        measurementName: string,
+        streamID: string | undefined,
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/${measurementName}/count`
+        )
+
+        const count: any = response;
+        return count;
+    }
+
+
+    public async getMeasurement(
+        pcapID: string,
+        measurementName: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        group?: any
+    ): Promise<any> {
+        const response = group ? await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/${measurementName}?from=${fromNs}&to=${toNs}&group=${group}`
+        ) : await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/${measurementName}?from=${fromNs}&to=${toNs}`
+        );
+
+        const rtpOffsetData: any = response;
+        return rtpOffsetData;
+    }
+
     // Video Graphs - Vrx Bar Chart
     public async getVrxHistogramForStream(pcapID: string, streamID: string | undefined): Promise<any> {
         const response = await this.transport.get(`/api/pcap/${pcapID}/stream/${streamID}/analytics/Vrx/histogram`);
@@ -99,6 +131,21 @@ export default class Stream {
     ): Promise<any> {
         const response = await this.transport.get(
             `/api/pcap/${pcapID}/stream/${streamID}/analytics/DeltaPacketTimeVsRtpTimeRaw?from=${fromNs}&to=${toNs}`
+        );
+        const latencyData: any = response;
+        return latencyData;
+    }
+
+    // Audio Graphs - Delta Packect VS RTP Line Chart (down-sampled)
+    public async getDeltaPacketTimeVsRtpTimeGrouped(
+        pcapID: string,
+        streamID: string | undefined,
+        fromNs: string | undefined,
+        toNs: string | undefined,
+        groupNs: string | undefined
+    ): Promise<any> {
+        const response = await this.transport.get(
+            `/api/pcap/${pcapID}/stream/${streamID}/analytics/DeltaPacketTimeVsRtpTimeGrouped?from=${fromNs}&to=${toNs}&group=${groupNs}`
         );
         const latencyData: any = response;
         return latencyData;
