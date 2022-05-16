@@ -217,6 +217,7 @@ export interface IStreamProcessing {
 export interface IStreamInfo {
     id: string; // Unique ID of the stream
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
+    error_list: Array<IProblem>;
     media_type: MediaType;
     full_media_type: FullMediaType;
     full_transport_type: FullTransportType;
