@@ -7,7 +7,7 @@ import { IPutEntry } from '@bisect/bisect-core-ts/dist/rest/common';
 // ////////////////////////////////////////////////////////////////////////////
 
 export default class Pcap {
-    public constructor(private readonly transport: Transport) { }
+    public constructor(private readonly transport: Transport) {}
 
     public async getAll(): Promise<IPcapInfo[]> {
         const response = await this.transport.get('/api/pcap');
@@ -93,7 +93,6 @@ export default class Pcap {
         const result = await this.transport.put(`/api/pcap/${pcapId}/reanalyze`, null);
         return result as IPcapUploadResult;
     }
-
 
     public async patch(pcapId: string, data: unknown): Promise<IPcapUploadResult> {
         const result = await this.transport.patch(`/api/pcap/${pcapId}`, data);

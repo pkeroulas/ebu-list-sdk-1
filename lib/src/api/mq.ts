@@ -1,15 +1,21 @@
+import { FullTransportType, MediaTypeMapping } from './pcap';
+
 export const anySubtopic = (topic: any) => topic + '.*';
 export const makeSubtopic = (topic: any, subTopic: any) => topic + '.' + subTopic;
 
+export interface IPreprocessorRequest {
+    action: 'preprocessing.request';
+    workflow_id: string;
+    pcap_id: string;
+    pcap_path: string;
+    options?: {
+        transport_type?: FullTransportType;
+        media_type_map?: MediaTypeMapping;
+    };
+}
+
 export const queues = {
-    /* Schema:
-    {
-        action: "preprocessing.request",
-        workflow_id: "<>",
-        pcap_id: "<>",
-        pcap_path: "<path to pcap>"
-    }
-    */
+    // Schema: IPreprocessorRequest
     preprocessorRequest: {
         name: 'ebu-list.preprocessor.request',
         options: {

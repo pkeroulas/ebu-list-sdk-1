@@ -1,3 +1,5 @@
+import { AnalysisNames } from './analysis/names';
+
 export interface IProblem {
     stream_id: string | null; // If null, applies to the whole pcap, e.g. truncated
     value: {
@@ -5,17 +7,123 @@ export interface IProblem {
     };
 }
 
-export interface IAnalysisProfileDetails {
+export type Compliance = 'compliant' | 'not_compliant' | 'disabled' | 'undefined';
+
+export interface IMinMax {
+    min: number;
+    max: number;
+}
+
+export interface IMinMaxAvg extends IMinMax {
+    avg: number;
+}
+
+export type AudioTimeUnit = 'packet_time' | 'μs';
+
+export type IAudioValueRange = { min: number | undefined; max: number | undefined; unit: AudioTimeUnit };
+
+export interface IMinMaxAvgRanges {
+    min: IAudioValueRange;
+    avg: IAudioValueRange;
+    max: IAudioValueRange;
+}
+export interface IAudioRtpProfile extends IMinMaxAvgRanges {}
+
+export interface IAudioPitProfile extends IMinMaxAvgRanges {}
+
+export type IAudioValueRangeUs = { min: number | undefined; max: number | undefined };
+
+export interface IMinMaxAvgUsRanges {
+    min: IAudioValueRangeUs;
+    avg: IAudioValueRangeUs;
+    max: IAudioValueRangeUs;
+}
+
+export type IAudioRtpProfileUs = IMinMaxAvgUsRanges;
+
+export interface ITsdfProfile {
+    tolerance: number;
+    limit: number;
+    unit: AudioTimeUnit;
+}
+
+export interface ITsdfAnalysisDetails {
+    compliance: Compliance;
+    level: 'narrow' | 'wide' | 'not_compliant';
+    result: Compliance;
+    max: number;
+}
+
+export type MinMaxAvgUsRange = IMinMaxAvg & {
+    unit: 'μs';
+};
+
+export interface IAudioLatencyAnalysisDetails {
+    limit: IAudioRtpProfileUs;
+    range: IMinMaxAvg;
+}
+
+export interface IAudioLatencyAnalysis {
+    result: Compliance;
+    details: IAudioLatencyAnalysisDetails;
+}
+
+export interface IRtpTsVsNtAnalysisDetails {
+    range: IMinMaxAvg;
+    limit: IMinMax;
+    unit: 'ticks';
+}
+
+export interface IRtpTsVsNtAnalysis {
+    result: Compliance;
+    details: IRtpTsVsNtAnalysisDetails;
+}
+export interface IAudioPitAnalysisDetails {
+    limit?: IMinMaxAvgUsRanges;
+    range: MinMaxAvgUsRange;
+}
+
+export interface IAudioPitAnalysis {
+    result: Compliance;
+    details: IAudioPitAnalysisDetails;
+}
+
+export interface ITsdfAnalysis {
+    result: Compliance;
+    details: ITsdfAnalysisDetails & ITsdfProfile;
+}
+
+export interface IAudioAnalysisProfile {
+    deltaPktTsVsRtpTsLimit: IAudioRtpProfile;
+    pit?: IAudioPitProfile;
+    tsdf: ITsdfProfile;
+}
+
+export interface IAnalysisProfile {
     id: string;
     label: string;
     timestamps: {
-        source: string;
+        source: 'pcap' | 'ptp_packets';
     };
-    audio: {
-        deltaPktTsVsRtpTsLimit: any;
-        tsdf: any;
-    };
+    audio: IAudioAnalysisProfile;
 }
+
+export type IAnalysisProfileDetails = IAnalysisProfile;
+
+// Maps network info to a media type from one SDP file
+export interface IMediaTypeMapEntry {
+    // <source> is only present if a source-filter is specified
+    source?: {
+        address: string;
+    };
+    destination: {
+        address: string;
+        port: number;
+    };
+    media_type: FullMediaType;
+}
+
+export type MediaTypeMapping = IMediaTypeMapEntry[];
 
 export interface IPcapInfo {
     analyzed: boolean; // True if the analysis is thoroughly complete
@@ -39,9 +147,11 @@ export interface IPcapInfo {
     ttml_streams: number; // Number of ttml streams
     wide_streams: number; // ST2110-21
     srt_streams: number; // SRT
-    sdps: Array<string>; //Sdps array
+    sdps?: string[]; // SDP documents
+    parsed_sdps?: unknown[]; // sdpParser.SessionDescription
+    media_type_map?: MediaTypeMapping; // Maps media types from SDP files to network info
+    transport_type: FullTransportType;
     summary: { error_list: IProblem[]; warning_list: IProblem[] };
-    sdp_count: number;
 }
 
 export interface PcapFileProcessingDone {
@@ -131,6 +241,7 @@ export type FullMediaType =
     | 'video/jxsv'
     | 'audio/L24'
     | 'audio/L16'
+    | 'audio/AM824'
     | 'video/smpte291'
     | 'application/ttml+xml'
     | 'unknown';
@@ -214,6 +325,73 @@ export interface IStreamProcessing {
     extractedFrames: ProcessingState;
 }
 
+export interface IStreamAnalyses {
+    [AnalysisNames.pit]: IAudioPitAnalysis;
+    [AnalysisNames.tsdf]: ITsdfAnalysis;
+    [AnalysisNames.packet_ts_vs_rtp_ts]: IAudioLatencyAnalysis;
+    '2110_21_cinst': any;
+    '2110_21_vrx': {
+        result: Compliance;
+    };
+    anc_payloads: any; //
+    destination_multicast_ip_address: any;
+    destination_multicast_mac_address: any;
+    field_bits: any; //
+    inter_frame_rtp_ts_delta: any;
+    mac_address_analysis: any;
+    marker_bit: any; //
+    pkts_per_frame: any;
+    rtp_sequence: any;
+    rtp_ts_vs_nt: IRtpTsVsNtAnalysis;
+    ttml_consistent_sequence_identifier: any;
+    ttml_inconsistent_sequence_identifier: any;
+    ttml_time_base_is_media: any;
+    unique_multicast_destination_ip_address: any;
+    unrelated_multicast_addresses: any;
+}
+
+export type Dash21Compliance = 'narrow' | 'wide' | 'not_compliant';
+
+// Meant for internal use
+export interface IGlobalVideoAnalysis {
+    compliance: Dash21Compliance;
+    cinst: {
+        cmax_narrow: number;
+        cmax_wide: number;
+        compliance: Dash21Compliance;
+    };
+    vrx: {
+        compliance: Dash21Compliance;
+        vrx_full_narrow: number;
+        vrx_full_wide: number;
+    };
+    trs: {
+        trs_ns: number;
+    };
+}
+
+export interface ITsdfGlobalDetails extends ITsdfProfile {
+    compliance: Compliance;
+    level: 'narrow' | 'wide' | 'not_compliant';
+    result: Compliance;
+    max: number;
+    tolerance: number;
+    limit: number;
+    unit: 'μs';
+}
+
+export interface IAudioLatencyGlobalDetails {
+    range: IMinMaxAvg;
+    limit: IMinMaxAvgUsRanges;
+    unit: AudioTimeUnit;
+}
+
+// Meant for internal use
+export interface IGlobalAudioAnalysis {
+    tsdf: ITsdfGlobalDetails;
+    packet_ts_vs_rtp_ts: IAudioLatencyGlobalDetails;
+}
+
 export interface IStreamInfo {
     id: string; // Unique ID of the stream
     media_specific?: MediaSpecificInfo; // Not set if stream is unknown
@@ -223,21 +401,17 @@ export interface IStreamInfo {
     full_transport_type: FullTransportType;
     media_type_validation?: IMediaTypeValidation;
     network_information: INetworkInformation;
-    global_video_analysis?: any;
-    global_audio_analysis?: any;
+    global_video_analysis?: Partial<IGlobalVideoAnalysis>;
+    global_audio_analysis?: Partial<IGlobalAudioAnalysis>;
     pcap: string; // The id of the pcap on which this stream is contained
     state: StreamState;
     statistics: IStreamStatistics;
-    analyses: IStreamAnalyses;
+    analyses: Partial<IStreamAnalyses>;
     processing: IStreamProcessing;
 }
 
-export interface IStreamAnalyses {
-    [key: string]: IStreamAnalysis;
-}
-
 export interface IStreamAnalysis {
-    result: 'compliant' | 'not_compliant' | 'disabled';
+    result: Compliance;
     details?: any;
 }
 
@@ -269,4 +443,18 @@ export function isLocalPcapAnalysisParams(p: unknown): p is ILocalPcapAnalysisPa
     if (typeof (p as ILocalPcapAnalysisParams).name !== 'string') return false;
     if (typeof (p as ILocalPcapAnalysisParams).path !== 'string') return false;
     return true;
+}
+
+export const isAudioStream = (stream?: IStreamInfo): boolean => stream?.media_type === 'audio';
+
+export function isIST2110AudioInfo(info?: MediaSpecificInfo): info is IST2110AudioInfo {
+    if (!info) return false;
+
+    const v = info as IST2110AudioInfo;
+    return (
+        v.encoding !== undefined &&
+        v.number_channels !== undefined &&
+        v.packet_time !== undefined &&
+        v.sampling !== undefined
+    );
 }

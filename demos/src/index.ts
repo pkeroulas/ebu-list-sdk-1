@@ -37,6 +37,7 @@ const parser = yargs(process.argv.slice(2))
         multicasts: { type: 'string', alias: 'm', nargs: 1, demandOption: false, describe: 'The stream multicast addresses list' },
         freerun: { type: 'boolean', alias: 'f', nargs: 0, demandOption: false, describe: 'Flag for free-running live capture and analysis' },
         duration: { type: 'number', alias: 'd', nargs: 1, demandOption: false, describe: 'Live capture duration in sec' },
+        sdp: { type: 'string', alias: 's', nargs: 1, demandOption: false, describe: 'SDP file' },
     })
     .wrap(yargs.terminalWidth())
     .epilog('© 2021 Bisect Lda');

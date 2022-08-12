@@ -7,6 +7,7 @@ export interface IArgs {
     multicasts?: string; // "mcast1,mcast2,..."
     freerun?: boolean;
     duration?: number;
+    sdp?: string;
 }
 
 export interface PcapFileReceived {
