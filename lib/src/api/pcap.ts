@@ -99,6 +99,35 @@ export interface IAudioAnalysisProfile {
     tsdf: ITsdfProfile;
 }
 
+/// This is a workaround to use the old validation type baed on TRoffset, which was deemed incorrect
+type UseTrOffset = { type: 'use_troffset' };
+
+/// New profiles should use this
+type UseLimit = { type: 'use_ticks'; limit: IMinMax };
+
+export type IRtpOffsetValidation = UseTrOffset | UseLimit;
+
+export type Validations = {
+    rtp_ts_vs_nt?: IRtpOffsetValidation;
+};
+
+type MediaTypeValidationBase = {
+    [key in MediaType]: Validations;
+};
+
+type FullMediaTypeValidationBase = {
+    [key in FullMediaType]: Validations;
+};
+
+/// The validations for a stream are selected as follows:
+/// - Collect the validations in 'common'
+/// - Collect the validations in the stream's media type
+/// - Collect the validations in the stream's full media type
+/// The latter replace the former, if they exist.
+export interface IValidationMap extends MediaTypeValidationBase, FullMediaTypeValidationBase {
+    common: Validations;
+}
+
 export interface IAnalysisProfile {
     id: string;
     label: string;
@@ -106,6 +135,7 @@ export interface IAnalysisProfile {
         source: 'pcap' | 'ptp_packets';
     };
     audio: IAudioAnalysisProfile;
+    validationMap: Partial<IValidationMap>;
 }
 
 export type IAnalysisProfileDetails = IAnalysisProfile;

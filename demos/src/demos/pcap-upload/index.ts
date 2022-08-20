@@ -23,7 +23,11 @@ export const run = async (args: IArgs) => {
         const timeoutMs = 120000; // It may be necessary to increase timeout due to the size of the pcap file
         const callback = (info: types.IUploadProgressInfo) => console.log(`percentage: ${info.percentage}`);
 
+        const profileId = '17555997-661c-451a-a682-d79299e4dbda'; // JT-NM Tested 2022
         console.log(`Pcap Id: ${pcapId}`);
+        console.log(`Analysis profile Id: ${profileId}`);
+
+        await list.analysisProfile.setDefault(profileId);
 
         if (args.sdp) {
             await list.pcap.onlyInsertInDatabase(name, stream, callback, pcapId);
