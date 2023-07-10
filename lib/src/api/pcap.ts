@@ -241,6 +241,7 @@ export interface IST2110AudioInfo {
     number_channels: number;
     packet_time: string;
     sampling: string;
+    rate: string; // just for consistency with Video and Anc
 }
 
 export interface IST2110SubSubstream {
@@ -333,7 +334,6 @@ export interface IStreamStatistics {
     last_packet_ts: string; // The abosulte timestamp of the last packet
     max_line_number?: number; // Video TODO move this to media specific
     packet_count: number; // Total number of RTP packets
-    rate?: number; // Video frame/field rate TODO move this to media specific
     sample_count?: number;
     samples_per_packet?: number;
     packet_size?: number;
